@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>AR | 人とロボットの境界線</title>
+<meta name="description" content="配布された紙をかざすと、印刷されていないものが見えます。">
+
+<!--
+  画像トラッキングには MindAR を使う。
+  iOS Safari は WebXR の image tracking に対応していないため、
+  getUserMedia 上で自前追跡する MindAR / 8th Wall しか実用的な選択肢がない。
+
+  ■ targets.mind の作り方
+    1. https://hiukim.github.io/mind-ar-js-doc/tools/compile を開く
+    2. 配布する紙面のPNG（tools/make_sheet.py の出力）をアップロード
+    3. 出力された targets.mind をこのフォルダに置く
+
+  ■ 重要
+    マーカーにするのは「QR単体」ではなく「紙面全体」。QRの格子は自己相似で
+    特徴点が乏しく、追跡が安定しない。紙面のタイトル・帯・CAPTCHA枠まで
+    含めた非対称な絵をターゲットにすること。
+-->
+<script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+
+<style>
+  :root {
+    --bg: #07080a; --ink: #ecebe8; --red: #ff2040; --cyan: #35e8e0;
+    --mono: "SFMono-Regular", Consolas, monospace;
+    --sans: "Noto Sans JP", "Yu Gothic", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+  a { color: inherit; }
+
+  .ui { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+
+  .ui__bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .8rem 1rem;
+    background: linear-gradient(rgba(8,9,12,.9), transparent);
+    pointer-events: auto;
+  }
+  .ui__org { font-family: var(--mono); font-size: .7rem; letter-spacing: .18em; color: var(--red); }
+  .ui__back { font-size: .78rem; text-decoration: none; border-bottom: 1px solid var(--red); }
+
+  .ui__status {
+    position: absolute; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
+    font-family: var(--mono); font-size: .72rem; letter-spacing: .14em;
+    background: rgba(8,9,12,.82); border: 1px solid #23262e;
+    padding: .55rem 1rem; white-space: nowrap;
+  }
+  .ui__status b { color: var(--cyan); font-weight: 400; }
+
+  /* 起動前のゲート。カメラ許可はユーザー操作から始める */
+  .gate {
+    position: fixed; inset: 0; z-index: 20;
+    display: flex; flex-direction: column; justify-content: center;
+    gap: 1.6rem; padding: 2rem 1.5rem;
+    background: var(--bg);
+  }
+  .gate[hidden] { display: none; }
+  .gate__org { font-family: var(--mono); font-size: .7rem; letter-spacing: .2em; color: var(--red); }
+  .gate__title { font-size: 1.7rem; font-weight: 900; line-height: 1.4; margin: 0; }
+  .gate__body { font-size: .88rem; line-height: 1.9; color: #b6b3ac; margin: 0; max-width: 30rem; }
+  .gate__btn {
+    align-self: flex-start;
+    background: var(--red); color: #fff; border: 0;
+    font-family: inherit; font-size: .92rem; font-weight: 700; letter-spacing: .08em;
+    padding: .95rem 1.8rem; cursor: pointer;
+  }
+  .gate__btn:disabled { background: #2a2e36; color: #767c86; cursor: not-allowed; }
+  .gate__note { font-size: .72rem; color: #8b9099; margin: 0; }
+  .gate__err {
+    font-family: var(--mono); font-size: .74rem; color: var(--red);
+    border: 1px solid var(--red); padding: .7rem .9rem; margin: 0;
+  }
+  .gate__err[hidden] { display: none; }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate">
+  <p class="gate__org">人とロボットの境界線</p>
+  <h1 class="gate__title">紙をかざしてください</h1>
+  <p class="gate__body">
+    配布された紙の全体がフレームに入るようにしてください。
+    紙の上では空欄のままのチェック欄に、機械が記入します。
+  </p>
+  <button class="gate__btn" id="start">カメラを起動する</button>
+  <p class="gate__note">映像は端末内でのみ処理され、送信も保存もされません。</p>
+  <p class="gate__err" id="err" hidden></p>
+</div>
+
+<div class="ui" id="ui" hidden>
+  <div class="ui__bar">
+    <span class="ui__org">SCANNING</span>
+    <a class="ui__back" href="../">もどる</a>
+  </div>
+  <p class="ui__status" id="status">紙を探しています <b>...</b></p>
+</div>
+
+<a-scene
+  id="scene"
+  mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: no; uiLoading: no; uiError: no; filterMinCF: 0.0001; filterBeta: 0.001"
+  color-space="sRGB"
+  renderer="colorManagement: true, physicallyCorrectLights"
+  vr-mode-ui="enabled: false"
+  device-orientation-permission-ui="enabled: false">
+
+  <a-assets>
+    <!-- 紙面に重ねる素材を置く場合はここに <img id="..."> を足す -->
+  </a-assets>
+
+  <!-- クリック判定は使わないので cursor / raycaster は載せない
+       （載せると raycaster.objects 未指定の警告が出るうえ無駄に重い） -->
+  <a-camera position="0 0 0"
+            look-controls="enabled: false"
+            wasd-controls="enabled: false"></a-camera>
+
+  <!--
+    targetIndex: 0 = targets.mind の1枚目。
+
+    座標系は「マーカー画像の幅 = 1」。原点は紙の中心、上が +Y。
+    A4縦(210x297mm)なので上下端は y = ±0.707。
+
+    下の座標は目分量ではなく make_sheet.py が実測して出力したもの。
+    紙面のレイアウトを変えたら make_sheet.py を再実行し、
+    出力された「ARオーバーレイ座標」で置き換えること。
+  -->
+  <a-entity mindar-image-target="targetIndex: 0" id="target">
+
+    <!-- CAPTCHA欄に入るチェック。紙の上では永久に空欄のままの箇所。
+         make_sheet.py 実測値: 中心 (-0.166, -0.031) / 枠の幅 0.039 -->
+    <a-entity id="check" position="-0.166 -0.031 0.01" scale="0 0 0">
+      <a-plane width="0.019" height="0.006" color="#ff2040"
+               rotation="0 0 45" position="-0.009 -0.004 0"></a-plane>
+      <a-plane width="0.034" height="0.006" color="#ff2040"
+               rotation="0 0 -45" position="0.005 0.004 0"></a-plane>
+    </a-entity>
+
+    <!-- 判定結果。チェック欄の少し下に出す -->
+    <a-entity id="verdict" position="0 -0.115 0.01" scale="0 0 0">
+      <a-plane width="0.62" height="0.062" color="#07080a" opacity="0.93"></a-plane>
+      <a-text value="判定: 確定できません" align="center" color="#35e8e0"
+              width="1.1" position="0 0.011 0.001"></a-text>
+      <a-text value="THE LINE IS NOT WHERE YOU THINK" align="center" color="#767c86"
+              width="0.8" position="0 -0.017 0.001"></a-text>
+    </a-entity>
+
+    <!-- 紙面を囲む照合フレーム。A4縦の外周に合わせる -->
+    <a-entity id="frame" scale="0 0 0">
+      <a-plane width="0.98" height="0.005" color="#ff2040" position="0 0.688 0"></a-plane>
+      <a-plane width="0.98" height="0.005" color="#ff2040" position="0 -0.688 0"></a-plane>
+      <a-plane width="0.005" height="1.381" color="#ff2040" position="-0.49 0 0"></a-plane>
+      <a-plane width="0.005" height="1.381" color="#ff2040" position="0.49 0 0"></a-plane>
+    </a-entity>
+
+  </a-entity>
+</a-scene>
+
+<script>
+(() => {
+  'use strict';
+
+  const gate   = document.getElementById('gate');
+  const err    = document.getElementById('err');
+  const ui     = document.getElementById('ui');
+  const status = document.getElementById('status');
+  const scene  = document.getElementById('scene');
+  const target = document.getElementById('target');
+
+  const btn = document.getElementById('start');
+
+  const fail = (msg) => {
+    err.textContent = msg;
+    err.hidden = false;
+  };
+
+  /* 起動前に環境を検査する。ここを通さないと、原因の違う失敗が
+     すべて「Failed to fetch」に化けて切り分けられなくなる。 */
+  const preflight = async () => {
+    if (location.protocol === 'file:') {
+      return 'file:// で開いています。ローカルサーバ経由で開いてください。'
+           + '  例: python -m http.server 8000';
+    }
+    // getUserMedia は secure context 必須。https か localhost 以外では動かない
+    if (!window.isSecureContext) {
+      return 'このURLではカメラを使えません（https または localhost が必要）。'
+           + ' LAN の http://192.168.x.x では起動しません。';
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      return 'このブラウザはカメラ入力に対応していません。';
+    }
+    try {
+      const res = await fetch('./targets.mind', { method: 'HEAD' });
+      if (!res.ok) throw new Error(String(res.status));
+    } catch (e) {
+      return 'targets.mind が見つかりません。MindAR のコンパイラで紙面から'
+           + '生成して ar/ に置いてください。'
+           + ' https://hiukim.github.io/mind-ar-js-doc/tools/compile';
+    }
+    return null;
+  };
+
+  preflight().then((problem) => {
+    if (!problem) return;
+    fail(problem);
+    btn.disabled = true;
+    btn.textContent = '起動できません';
+  });
+
+  btn.addEventListener('click', async () => {
+    const sys = scene.systems && scene.systems['mindar-image-system'];
+    if (!sys) {
+      fail('ARエンジンを読み込めませんでした。通信環境を確認して再読み込みしてください。');
+      return;
+    }
+    const problem = await preflight();
+    if (problem) { fail(problem); return; }
+
+    btn.disabled = true;
+    try {
+      await sys.start();
+      gate.hidden = true;
+      ui.hidden = false;
+    } catch (e) {
+      btn.disabled = false;
+      fail('カメラを起動できませんでした。ブラウザのカメラ許可を確認してください。'
+           + ' (' + (e && e.name ? e.name : 'error') + ')');
+    }
+  });
+
+  // マーカー検出でオーバーレイを出す。チェック → 判定 の順で見せる
+  const show = (el, s) => el.setAttribute('scale', s + ' ' + s + ' ' + s);
+  let timer = null;
+
+  target.addEventListener('targetFound', () => {
+    status.innerHTML = '紙を検出 <b>/ 照合中</b>';
+    show(document.getElementById('frame'), 1);
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      show(document.getElementById('check'), 1);
+      timer = setTimeout(() => {
+        show(document.getElementById('verdict'), 1);
+        status.innerHTML = '判定 <b>確定できません</b>';
+      }, 1100);
+    }, 500);
+  });
+
+  target.addEventListener('targetLost', () => {
+    clearTimeout(timer);
+    status.innerHTML = '紙を探しています <b>...</b>';
+    ['frame', 'check', 'verdict'].forEach(id => show(document.getElementById(id), 0));
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+/* ==========================================================================
+   人とロボットの境界線 / THE LINE BETWEEN HUMAN AND MACHINE
+
+   密度で押す。重慶大廈・夜市の看板の重なり。
+   ただし土台は 1 本のグリッドで、混沌は「層の重なり」でつくる。
+
+   色の役割
+     白    = 人間の言葉（明朝）
+     シアン = 機械の言葉（等幅・発光する）
+     赤    = 問い / 境界そのもの
+     琥珀・マゼンタ・ライム = 看板のネオンのみ
+   ========================================================================== */
+
+:root {
+  --bg:      #07080a;
+  --bg2:     #0a0c10;
+  --ink:     #ecebe8;
+  --dim:     #767c86;
+  --dim2:    #4a505a;
+  --line:    #1e222b;
+  --cyan:    #35e8e0;
+  --red:     #ff2040;
+  --amber:   #ffb020;
+  --magenta: #ff3fc0;
+  --lime:    #a8ff3d;
+
+  --sans:  "Noto Sans JP", "Yu Gothic", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
+  --serif: "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", serif;
+  --mono:  "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+
+  --pad:  clamp(1.1rem, 4vw, 3.5rem);
+  --rail: 2.2rem;
+  --maxw: 78rem;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 { margin: 0; line-height: 1.35; font-weight: 700; }
+p, ul, ol, dl { margin: 0; }
+ul, ol { list-style: none; padding: 0; }
+i { font-style: normal; }
+
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+
+.skip {
+  position: absolute; left: -999px; top: 0; z-index: 100;
+  background: var(--ink); color: var(--bg); padding: .8rem 1.4rem;
+}
+.skip:focus { left: 0; }
+
+/* ------------------------------------------------------------------ rails */
+
+.rail {
+  position: fixed; top: 0; bottom: 0; width: var(--rail);
+  z-index: 40; pointer-events: none;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .28em;
+  background: var(--bg);
+  border-inline: 1px solid var(--line);
+}
+.rail--l { left: 0; color: var(--dim2); }
+.rail--r { right: 0; color: var(--cyan); }
+
+.rail__v, .rail__stream {
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+  max-height: 100%;
+  overflow: hidden;
+}
+.rail__stream { text-shadow: 0 0 8px rgba(53, 232, 224, .5); }
+
+@media (max-width: 900px) { .rail { display: none; } :root { --rail: 0rem; } }
+
+/* --------------------------------------------------------------- tickers */
+
+.tick {
+  position: fixed; left: var(--rail); right: var(--rail);
+  z-index: 41;
+  background: var(--bg);
+  border-block: 1px solid var(--line);
+  overflow: hidden;
+  padding: .3rem 0;
+}
+.tick--top { top: 0; }
+.tick--bottom { bottom: 0; }
+
+.tick__track {
+  display: flex; gap: .7rem; width: max-content; white-space: nowrap;
+  font-family: var(--mono); font-size: .6rem;
+  letter-spacing: .16em; color: var(--dim);
+}
+.tick__track b { color: var(--ink); font-weight: 400; }
+.tick__track span { color: var(--red); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .tick__track { animation: marq 60s linear infinite; }
+  .tick__track--rev { animation-duration: 78s; animation-direction: reverse; }
+  @keyframes marq { to { transform: translateX(-50%); } }
+}
+
+/* ---------------------------------------------------------------- layout */
+
+main { padding: 2.1rem var(--rail); }
+
+.hero, .sec, .foot {
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+
+/* -------------------------------------------------------------------- hero */
+
+.hero {
+  position: relative;
+  padding-block: clamp(3rem, 12vh, 6rem) clamp(2.5rem, 8vh, 4rem);
+}
+
+/* 背後の巨大な「境」。情報の層をもう一枚増やす */
+.hero__ghost {
+  position: absolute; top: -2vh; right: -1vw;
+  font-family: var(--serif); font-weight: 900;
+  font-size: clamp(16rem, 42vw, 34rem);
+  line-height: .8; color: #0d1016;
+  z-index: -1; pointer-events: none;
+  -webkit-user-select: none; user-select: none;
+}
+
+.hero__kicker {
+  display: flex; flex-wrap: wrap; gap: .35rem;
+  margin-bottom: 1.6rem;
+}
+.chip {
+  font-family: var(--mono); font-size: .58rem; letter-spacing: .16em;
+  border: 1px solid var(--line); color: var(--dim);
+  padding: .18rem .55rem;
+}
+.chip--red { background: var(--red); border-color: var(--red); color: #fff; }
+.chip--cyan { border-color: var(--cyan); color: var(--cyan); }
+
+.hero__title {
+  font-family: var(--serif); font-weight: 900;
+  font-size: clamp(2.2rem, 8.5vw, 5rem);
+  line-height: 1.25; letter-spacing: .01em;
+}
+.hero__accent { color: var(--red); display: block; }
+
+.hero__alt {
+  display: flex; flex-wrap: wrap; gap: .3rem 1.1rem;
+  margin-top: .9rem;
+  font-family: var(--mono); font-size: .66rem;
+  letter-spacing: .2em; color: var(--dim);
+}
+.hero__alt span:first-child { color: var(--ink); }
+
+.hero__code {
+  margin-top: 1.1rem; padding-block: .7rem;
+  border-block: 1px solid var(--line);
+  font-family: var(--mono); font-size: .56rem;
+  line-height: 2.1; letter-spacing: .1em;
+  color: var(--cyan); opacity: .8; word-break: break-all;
+}
+.hero__code span {
+  color: var(--red); border: 1px solid var(--red);
+  padding: 0 .3rem; margin-right: .35rem; margin-left: .5rem;
+}
+.hero__code span:first-child { margin-left: 0; }
+
+.hero__cols {
+  display: grid; gap: clamp(1.5rem, 4vw, 3rem);
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  margin-top: 1.8rem;
+}
+@media (max-width: 760px) { .hero__cols { grid-template-columns: 1fr; } }
+
+.hero__lead { font-size: clamp(.9rem, 2vw, 1rem); color: #c3c1bd; }
+.hero__lead b { display: block; margin-top: .8rem; color: var(--ink); }
+.hero__en {
+  display: block; margin-top: .9rem;
+  font-family: var(--mono); font-size: .66rem;
+  line-height: 2; letter-spacing: .04em; color: var(--dim);
+}
+
+.spec div {
+  display: grid; grid-template-columns: 1fr auto; gap: .6rem;
+  padding: .4rem 0; border-bottom: 1px solid var(--line);
+}
+.spec dt {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .14em; color: var(--dim);
+}
+.spec dt i { color: var(--dim2); margin-left: .3rem; }
+.spec dd { margin: 0; font-size: .8rem; text-align: right; }
+.tbd { color: var(--red); }
+
+/* -------------------------------------------------------------- 看板帯 */
+
+.signs {
+  margin-inline: calc(var(--pad) * -1);
+  border-block: 1px solid var(--line);
+  background: radial-gradient(120% 130% at 50% 0%, #150a12 0%, #06070a 72%);
+  overflow: hidden; padding: 1.3rem 0;
+}
+.signs__track { display: flex; gap: .7rem; width: max-content; align-items: flex-start; }
+
+.sign {
+  writing-mode: vertical-rl;
+  font-family: var(--serif); font-weight: 900;
+  font-size: clamp(.85rem, 2.2vw, 1.1rem);
+  letter-spacing: .2em;
+  padding: .7rem .42rem;
+  border: 2px solid currentColor;
+  background: rgba(6, 7, 10, .7);
+  white-space: nowrap;
+  text-shadow: 0 0 4px currentColor, 0 0 13px currentColor;
+  box-shadow: 0 0 6px -1px currentColor, inset 0 0 10px -4px currentColor;
+}
+.sign:nth-child(even) { margin-top: 1.5rem; }
+.sign:nth-child(3n)   { margin-top: .6rem; }
+
+.sign--red { color: var(--red); }
+.sign--cyan { color: var(--cyan); }
+.sign--amber { color: var(--amber); }
+.sign--magenta { color: var(--magenta); }
+.sign--lime { color: var(--lime); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .signs__track { animation: marq 52s linear infinite; }
+  /* 切れかけの蛍光灯 */
+  .sign--cyan { animation: flick 7s steps(1, end) infinite; }
+  .sign--magenta { animation: flick 11s steps(1, end) infinite .9s; }
+  @keyframes flick {
+    0%, 96%, 100% { filter: none; }
+    97% { filter: brightness(.2) saturate(.3); }
+    98.4% { filter: none; }
+    99% { filter: brightness(.45); }
+  }
+}
+
+/* -------------------------------------------------------------- sections */
+
+.sec { padding-block: clamp(3rem, 9vh, 5.5rem); border-top: 1px solid var(--line); }
+.sec--dark {
+  background: var(--bg2);
+  max-width: none;
+  border-block: 1px solid var(--line);
+}
+.sec--dark > * { max-width: var(--maxw); margin-inline: auto; }
+
+.sec__head { margin-bottom: clamp(1.8rem, 4vh, 2.8rem); }
+.sec__num {
+  font-family: var(--mono); font-size: .6rem;
+  letter-spacing: .22em; color: var(--red); margin-bottom: .5rem;
+}
+.sec__num span { color: var(--dim); }
+.sec__num i { color: var(--dim2); }
+.sec__title {
+  font-family: var(--serif); font-weight: 900;
+  font-size: clamp(1.35rem, 4vw, 2.1rem);
+}
+.sec__en {
+  margin-top: .35rem;
+  font-family: var(--mono); font-size: .62rem;
+  letter-spacing: .14em; color: var(--cyan); opacity: .75;
+}
+.sec__note {
+  margin-top: .8rem; max-width: 36rem;
+  font-size: .84rem; color: var(--dim);
+}
+
+/* ------------------------------------------------------------------- 沿革 */
+
+/* 罫線は「1pxのgap＋親の背景色」ではなく各セルのborderで引く。
+   gap方式だと余ったセルが色の塊になって穴が空いて見えるため。 */
+.era {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  border: 1px solid var(--line); border-width: 1px 0 0 1px;
+}
+.era__i {
+  background: var(--bg); padding: 1.2rem 1rem;
+  border: 1px solid var(--line); border-width: 0 1px 1px 0;
+  display: flex; flex-direction: column; gap: .45rem;
+}
+.era__i--now { background: #0f1219; }
+.era__n {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .22em; color: var(--dim2);
+}
+.era__t { font-family: var(--serif); font-size: 1.35rem; font-weight: 900; }
+.era__t i {
+  display: block; font-family: var(--mono); font-size: .55rem;
+  letter-spacing: .2em; color: var(--dim); font-weight: 400;
+}
+.era__i--now .era__t { color: var(--red); }
+.era__b { font-size: .8rem; color: #aeaba5; }
+.era__m {
+  font-family: var(--mono); font-size: .56rem;
+  letter-spacing: .1em; color: var(--dim);
+}
+.era__m b { color: var(--red); font-weight: 400; }
+.era__m i { color: var(--dim2); }
+.era__c {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .08em; color: var(--cyan);
+  word-break: break-all;
+  text-shadow: 0 0 9px rgba(53, 232, 224, .4);
+}
+.era__f { margin-top: auto; padding-top: .9rem; color: var(--cyan); height: 2.6rem; }
+.era__f--g {
+  font-family: var(--serif); font-size: 1rem;
+  letter-spacing: .16em; color: var(--dim);
+  display: flex; align-items: flex-end;
+}
+.era__f--p {
+  background-image:
+    linear-gradient(90deg, var(--line) 1px, transparent 1px),
+    linear-gradient(var(--line) 1px, transparent 1px);
+  background-size: 8px 8px;
+  height: 2.6rem;
+  -webkit-mask-image: linear-gradient(90deg, #000 25%, transparent);
+  mask-image: linear-gradient(90deg, #000 25%, transparent);
+}
+.era__f--s {
+  font-family: var(--mono); font-size: .58rem;
+  color: var(--red); display: flex; align-items: flex-end;
+}
+
+/* ----------------------------------------------------------------- 境界線 */
+
+.split {
+  --split: 50%;
+  position: relative; height: clamp(11rem, 30vh, 16rem);
+  border: 1px solid var(--line); overflow: hidden;
+  cursor: ew-resize; touch-action: pan-y; background: #050608;
+}
+.split__layer {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: clamp(1rem, 3.5vw, 2rem);
+}
+.split__layer--machine { color: var(--cyan); }
+.split__layer--machine .split__body {
+  font-family: var(--mono);
+  font-size: clamp(.58rem, 1.5vw, .76rem);
+  line-height: 2.2; word-break: break-all;
+  text-shadow: 0 0 10px rgba(53, 232, 224, .45);
+}
+.split__layer--human { background: var(--bg); clip-path: inset(0 calc(100% - var(--split)) 0 0); }
+.split__layer--human .split__body {
+  font-family: var(--serif); font-weight: 900;
+  font-size: clamp(1.05rem, 4vw, 1.9rem); letter-spacing: .05em;
+}
+.split__label {
+  position: absolute; bottom: clamp(1rem, 3.5vw, 2rem);
+  font-family: var(--mono); font-size: .55rem;
+  letter-spacing: .2em; opacity: .55;
+}
+/* 人間側の層が機械側を覆うので、ラベルは左右に振り分ける */
+.split__layer--human .split__label { left: clamp(1rem, 3.5vw, 2rem); }
+.split__layer--machine .split__label { right: clamp(1rem, 3.5vw, 2rem); }
+
+.split__handle {
+  position: absolute; top: 0; bottom: 0; left: var(--split);
+  width: 1px; margin-left: -.5px;
+  background: var(--red); box-shadow: 0 0 12px rgba(255, 32, 64, .85);
+  cursor: ew-resize;
+}
+.split__handle::after {
+  content: ""; position: absolute; top: 50%; left: 50%;
+  width: 2rem; height: 2rem; margin: -1rem 0 0 -1rem;
+  border: 1px solid var(--red); border-radius: 50%; background: var(--bg);
+}
+
+.read {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  border: 1px solid var(--line); border-width: 0 0 0 1px;
+}
+.read div {
+  background: var(--bg); padding: .6rem .8rem;
+  border: 1px solid var(--line); border-width: 0 1px 1px 0;
+}
+.read dt {
+  font-family: var(--mono); font-size: .55rem;
+  letter-spacing: .14em; color: var(--dim);
+}
+.read dt i { color: var(--dim2); }
+.read dd {
+  margin: 0; font-family: var(--mono); font-size: .82rem; color: var(--cyan);
+}
+
+/* ------------------------------------------------------------------- 展示 */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  border: 1px solid var(--line); border-width: 1px 0 0 1px;
+}
+.ex {
+  background: var(--bg); padding: 1.3rem 1.1rem;
+  border: 1px solid var(--line); border-width: 0 1px 1px 0;
+  display: flex; flex-direction: column; gap: .5rem;
+  transition: background .25s;
+}
+.ex:hover { background: #0f1219; }
+
+.ex__n {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .22em; color: var(--red);
+}
+.ex__t { font-size: .98rem; }
+.ex__t i {
+  display: block; font-family: var(--mono); font-size: .53rem;
+  letter-spacing: .18em; color: var(--dim); font-weight: 400; margin-top: .2rem;
+}
+.ex__b { font-size: .8rem; color: #aeaba5; }
+
+.ex__s { margin-top: auto; padding-top: .8rem; display: flex; flex-wrap: wrap; gap: .3rem; }
+.ex__s div {
+  display: flex; gap: .35rem; align-items: baseline;
+  border: 1px solid var(--line); padding: .1rem .45rem;
+}
+.ex__s dt { font-family: var(--mono); font-size: .53rem; letter-spacing: .1em; color: var(--dim2); }
+.ex__s dt i { color: var(--dim2); }
+.ex__s dd { margin: 0; font-family: var(--mono); font-size: .58rem; color: var(--dim); }
+.ex__s dd span { color: var(--dim2); }
+.ex__s--col { flex-direction: column; align-items: stretch; padding-top: 0; }
+.ex__s--col div { justify-content: space-between; }
+
+/* --------------------------------------------------------------------- AR */
+
+.ar {
+  display: grid; gap: clamp(1.5rem, 4vw, 3rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: start;
+}
+@media (max-width: 760px) { .ar { grid-template-columns: 1fr; } }
+
+.qr { margin: 0; }
+.qr__img {
+  display: block; width: 100%; max-width: 26rem; height: auto; background: #fff;
+  /* 縮小表示なので補間を効かせる。pixelated だと絵が消えて読取率も落ちる */
+}
+.qr__cap { margin-top: .9rem; font-size: .8rem; color: var(--dim); max-width: 26rem; }
+
+.ar__side { display: flex; flex-direction: column; gap: 1.4rem; align-items: flex-start; }
+
+.how { display: flex; flex-direction: column; gap: .5rem; }
+.how li {
+  display: flex; gap: .7rem; align-items: baseline;
+  font-size: .82rem; color: #aeaba5;
+}
+.how li span {
+  flex: 0 0 auto;
+  font-family: var(--mono); font-size: .58rem;
+  border: 1px solid var(--red); color: var(--red);
+  width: 1.4rem; height: 1.4rem;
+  display: inline-grid; place-items: center;
+}
+.how li i {
+  font-family: var(--mono); font-size: .53rem;
+  letter-spacing: .14em; color: var(--dim2); margin-left: .35rem;
+}
+
+.cta {
+  display: inline-flex; align-items: center; gap: .7rem;
+  padding: .8rem 1.5rem; border: 1px solid var(--cyan);
+  color: var(--cyan); text-decoration: none; font-size: .85rem;
+  box-shadow: 0 0 14px -6px var(--cyan), inset 0 0 14px -10px var(--cyan);
+  transition: background .2s, color .2s;
+}
+.cta b { font-family: var(--mono); font-size: .58rem; letter-spacing: .18em; font-weight: 400; }
+.cta:hover { background: var(--cyan); color: var(--bg); }
+
+.fine { font-size: .7rem; color: var(--dim2); }
+.fine i { font-family: var(--mono); font-size: .58rem; }
+
+/* ------------------------------------------------------------------- 資料 */
+
+.refs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  border: 1px solid var(--line); border-width: 1px 0 0 1px;
+}
+.refs__col {
+  background: var(--bg); padding: 1.2rem 1.1rem;
+  border: 1px solid var(--line); border-width: 0 1px 1px 0;
+}
+.refs__h {
+  font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .22em; color: var(--red);
+  padding-bottom: .5rem; border-bottom: 1px solid var(--line);
+}
+.refs__h i { color: var(--dim2); }
+.refs__h--sp { margin-top: 1.4rem; }
+
+.refs__l li { padding: .55rem 0; border-bottom: 1px solid var(--line); }
+.refs__l b { display: block; font-size: .8rem; font-weight: 400; }
+.refs__l span {
+  font-family: var(--mono); font-size: .55rem;
+  letter-spacing: .08em; color: var(--dim2);
+}
+
+/* ------------------------------------------------------------------- foot */
+
+.foot { padding-block: clamp(2.5rem, 7vh, 4rem); border-top: 1px solid var(--line); }
+.foot__t { font-family: var(--serif); font-size: .95rem; }
+.foot__t i {
+  display: block; font-family: var(--mono); font-size: .58rem;
+  letter-spacing: .2em; color: var(--dim); margin-top: .2rem;
+}
+.foot__s {
+  margin-top: .8rem;
+  font-family: var(--mono); font-size: .55rem;
+  letter-spacing: .12em; color: var(--dim2); word-break: break-all;
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>人とロボットの境界線 / THE LINE BETWEEN HUMAN AND MACHINE</title>
+<meta name="description" content="かつて「音」だけで情報を伝え、やがて文字や映像を記録する術を手に入れた人類。機械が自ら思考し語りかける今、人とロボットの境界は何か。">
+<meta property="og:title" content="人とロボットの境界線">
+<meta property="og:description" content="二足歩行ロボットの実演、透過ディスプレイ、AR。人と機械の境界を問う展示。">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#main">本文へスキップ</a>
+
+<!-- ===== 画面端の常駐レイヤ ===================================== -->
+<div class="rail rail--l" aria-hidden="true">
+  <span class="rail__v">人とロボットの境界線 ／ THE LINE BETWEEN HUMAN AND MACHINE ／ 人與機器的分界線 ／ 인간과 로봇의 경계선</span>
+</div>
+<div class="rail rail--r" aria-hidden="true">
+  <span class="rail__stream" id="stream"></span>
+</div>
+
+<div class="tick tick--top" aria-hidden="true">
+  <div class="tick__track">
+    <b>音</b> SOUND 聲 <b>→</b> <b>文字</b> TEXT 文字 <b>→</b> <b>映像</b> IMAGE 影像 <b>→</b> <b>思考</b> THOUGHT 思維
+    <span>///</span> 人間可読 HUMAN-READABLE <b>/</b> 機械可読 MACHINE-READABLE
+    <span>///</span> ⠓⠥⠍⠁⠝ <span>///</span> ·--- ·-· -· <span>///</span> 01001000 01001101
+    <span>///</span> <b>音</b> SOUND 聲 <b>→</b> <b>文字</b> TEXT 文字 <b>→</b> <b>映像</b> IMAGE 影像 <b>→</b> <b>思考</b> THOUGHT 思維
+    <span>///</span> 人間可読 HUMAN-READABLE <b>/</b> 機械可読 MACHINE-READABLE
+    <span>///</span> ⠓⠥⠍⠁⠝ <span>///</span> ·--- ·-· -· <span>///</span> 01001000 01001101
+    <span>///</span>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ===== HERO ================================================== -->
+<section class="hero">
+  <span class="hero__ghost" aria-hidden="true">境</span>
+
+  <p class="hero__kicker">
+    <span class="chip chip--red">EXHIBITION 展示</span>
+    <span class="chip">二足歩行 BIPEDAL</span>
+    <span class="chip">透過 TRANSPARENT</span>
+    <span class="chip">AR</span>
+    <span class="chip">書籍 BOOKS</span>
+    <span class="chip chip--cyan" id="clock">--:--:--</span>
+  </p>
+
+  <h1 class="hero__title">
+    人とロボットの<span class="hero__accent">境界線</span>
+  </h1>
+
+  <p class="hero__alt">
+    <span lang="en">THE LINE BETWEEN HUMAN AND MACHINE</span>
+    <span lang="zh-Hant">人與機器的分界線</span>
+    <span lang="ko">인간과 로봇의 경계선</span>
+  </p>
+
+  <p class="hero__code" aria-hidden="true">
+    <span>UTF-16</span> U+4EBA U+3068 U+30ED U+30DC U+30C3 U+30C8 U+306E U+5883 U+754C U+7DDA
+    <span>UTF-8</span> E5 A2 83 E7 95 8C E7 B7 9A
+    <span>BASE64</span> 5aKD55WM57ea
+    <span>MORSE</span> ·-· --- -··· --- -
+    <span>BRAILLE</span> ⠅⠽⠕⠥⠅⠁⠊⠎⠑⠝
+  </p>
+
+  <div class="hero__cols">
+    <p class="hero__lead">
+      かつて「音」だけで情報を伝え、やがて文字や映像を記録する術を手に入れた人類。
+      AIにより機械が自ら思考し語りかける存在へ進化している中、<b>人とロボットの境界は何か？</b>
+      <span lang="en" class="hero__en">Humanity once carried information by sound alone, then learned to record
+      letters and images. Now machines think, and speak back. Where is the line?</span>
+    </p>
+
+    <dl class="spec">
+      <div><dt>会期 <i>DATES</i></dt><dd class="tbd">調整中</dd></div>
+      <div><dt>会場 <i>VENUE</i></dt><dd class="tbd">調整中</dd></div>
+      <div><dt>入場 <i>ADMISSION</i></dt><dd class="tbd">調整中</dd></div>
+      <div><dt>展示数 <i>WORKS</i></dt><dd>05</dd></div>
+      <div><dt>体験 <i>MODES</i></dt><dd>AR / 実演 / 試遊</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ===== 看板帯 ================================================ -->
+<div class="signs" aria-hidden="true">
+  <div class="signs__track">
+    <span class="sign sign--red">義體調整</span>
+    <span class="sign sign--cyan">電腦維修</span>
+    <span class="sign sign--amber">兌換 24H</span>
+    <span class="sign sign--magenta">생체 인증</span>
+    <span class="sign sign--lime">記憶收購</span>
+    <span class="sign sign--red">人類鑑定</span>
+    <span class="sign sign--cyan">義肢工房</span>
+    <span class="sign sign--amber">熱炒 宵夜</span>
+    <span class="sign sign--magenta">情緒調律</span>
+    <span class="sign sign--lime">신분 조회</span>
+    <span class="sign sign--cyan">睡眠代行</span>
+    <span class="sign sign--red">語言翻譯</span>
+    <span class="sign sign--amber">ЧЕЛОВЕК?</span>
+    <span class="sign sign--lime">身分照会</span>
+    <span class="sign sign--red">義體調整</span>
+    <span class="sign sign--cyan">電腦維修</span>
+    <span class="sign sign--amber">兌換 24H</span>
+    <span class="sign sign--magenta">생체 인증</span>
+    <span class="sign sign--lime">記憶收購</span>
+    <span class="sign sign--red">人類鑑定</span>
+    <span class="sign sign--cyan">義肢工房</span>
+    <span class="sign sign--amber">熱炒 宵夜</span>
+    <span class="sign sign--magenta">情緒調律</span>
+    <span class="sign sign--lime">신분 조회</span>
+    <span class="sign sign--cyan">睡眠代行</span>
+    <span class="sign sign--red">語言翻譯</span>
+    <span class="sign sign--amber">ЧЕЛОВЕК?</span>
+    <span class="sign sign--lime">身分照会</span>
+  </div>
+</div>
+
+<!-- ===== 沿革 ==================================================
+     各時代に、その時代の符号そのものを並べる。
+     音=モールス / 文字=点字 / 映像=hex / 思考=binary -->
+<section class="sec" id="history">
+  <header class="sec__head">
+    <p class="sec__num">01 <span>／ 記録の手段 <i>MEANS OF RECORD</i></span></p>
+    <h2 class="sec__title">記録の手段が、境界を動かしてきた</h2>
+    <p class="sec__en" lang="en">Every new medium moved the line.</p>
+  </header>
+
+  <ol class="era">
+    <li class="era__i">
+      <span class="era__n">01</span>
+      <h3 class="era__t">音 <i>SOUND</i></h3>
+      <p class="era__b">空気の振動。伝えることは、その場に居合わせることだった。</p>
+      <p class="era__m">受信者 ─ 人間のみ <i>HUMAN ONLY</i></p>
+      <p class="era__c">·-- ·- ···- · ／ 聲</p>
+      <svg class="era__f" viewBox="0 0 120 28" aria-hidden="true"><path d="M0 14 Q5 2 10 14 T20 14 T30 14 Q35 0 40 14 T50 14 T60 14 Q65 5 70 14 T80 14 T90 14 Q95 1 100 14 T110 14 T120 14" fill="none" stroke="currentColor"/></svg>
+    </li>
+    <li class="era__i">
+      <span class="era__n">02</span>
+      <h3 class="era__t">文字 <i>TEXT</i></h3>
+      <p class="era__b">音が形になり、時間を越えて残る。読む技能を持つ者だけの情報。</p>
+      <p class="era__m">受信者 ─ 識字者 <i>LITERATE</i></p>
+      <p class="era__c">⠞⠑⠭⠞ ／ あ ア A 亜 文</p>
+      <div class="era__f era__f--g" aria-hidden="true">あ ア A 亜 ㋐ 文 מ ก</div>
+    </li>
+    <li class="era__i">
+      <span class="era__n">03</span>
+      <h3 class="era__t">映像 <i>IMAGE</i></h3>
+      <p class="era__b">記録が光と時間を含む。見たものを、そのまま渡せるようになった。</p>
+      <p class="era__m">受信者 ─ 人間＋装置 <i>HUMAN + DEVICE</i></p>
+      <p class="era__c">FF D8 FF E0 00 10 4A 46 ／ 影像</p>
+      <div class="era__f era__f--p" aria-hidden="true"></div>
+    </li>
+    <li class="era__i era__i--now">
+      <span class="era__n">04</span>
+      <h3 class="era__t">思考 <i>THOUGHT</i></h3>
+      <p class="era__b">機械が自ら考え、語りかける。渡す相手は、もう人間だけではない。</p>
+      <p class="era__m">受信者 ─ <b>不明 <i>UNKNOWN</i></b></p>
+      <p class="era__c">01001000 01010101 01001101 ／ 思維</p>
+      <div class="era__f era__f--s" aria-hidden="true">&gt;&gt; RESP 0.214s / CONF 0.914</div>
+    </li>
+  </ol>
+</section>
+
+<!-- ===== 境界線 ================================================ -->
+<section class="sec sec--dark" id="boundary">
+  <header class="sec__head">
+    <p class="sec__num">02 <span>／ 実演 <i>DEMONSTRATION</i></span></p>
+    <h2 class="sec__title">境界線は、どこにある</h2>
+    <p class="sec__en" lang="en">The same sentence, rendered for two different readers.</p>
+    <p class="sec__note">
+      同じ一文が、左では人間に読める文字として、右では機械に渡される符号として置かれています。
+      線を動かしてください。どこまでが「読める」ですか。
+    </p>
+  </header>
+
+  <div class="split" id="split" data-text="人とロボットの境界は何か">
+    <div class="split__layer split__layer--machine">
+      <p class="split__body" id="splitMachine"></p>
+      <span class="split__label">MACHINE READABLE ／ 機械可読</span>
+    </div>
+    <div class="split__layer split__layer--human">
+      <p class="split__body" id="splitHuman"></p>
+      <span class="split__label">人間可読 ／ HUMAN READABLE</span>
+    </div>
+    <div class="split__handle" id="splitHandle" role="slider" tabindex="0"
+         aria-label="境界線の位置" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50"></div>
+  </div>
+
+  <dl class="read">
+    <div><dt>境界位置 <i>POS</i></dt><dd id="roPos">50.0%</dd></div>
+    <div><dt>人間可読 <i>HUM</i></dt><dd id="roHuman">6 字</dd></div>
+    <div><dt>機械可読 <i>MAC</i></dt><dd id="roMachine">6 字</dd></div>
+    <div><dt>符号化 <i>ENC</i></dt><dd>UTF-16 / U+</dd></div>
+    <div><dt>状態 <i>STATE</i></dt><dd id="roState">境界上</dd></div>
+  </dl>
+</section>
+
+<!-- ===== 展示内容 ============================================== -->
+<section class="sec" id="exhibits">
+  <header class="sec__head">
+    <p class="sec__num">03 <span>／ 展示内容 <i>WORKS</i></span></p>
+    <h2 class="sec__title">展示内容</h2>
+  </header>
+
+  <div class="grid">
+    <article class="ex">
+      <p class="ex__n">01</p>
+      <h3 class="ex__t">二足歩行ロボットの実演<i lang="en">BIPEDAL ROBOT / LIVE</i></h3>
+      <p class="ex__b">人がもっとも意識せずに行う動作を、機械が再現する。その不自然さと、自然さ。</p>
+      <dl class="ex__s"><div><dt>形式</dt><dd>実演</dd></div><div><dt>周期</dt><dd>随時</dd></div><div><dt>距離</dt><dd>1.5m</dd></div></dl>
+    </article>
+    <article class="ex">
+      <p class="ex__n">02</p>
+      <h3 class="ex__t">透過ディスプレイ・スピーカー<i lang="en">TRANSPARENT DISPLAY / VOICE</i></h3>
+      <p class="ex__b">向こう側が透けて見える表示面と、声。装置がこちらへ語りかけてくる状況をつくる。</p>
+      <dl class="ex__s"><div><dt>形式</dt><dd>常設</dd></div><div><dt>音声</dt><dd>あり</dd></div><div><dt>透過</dt><dd>可変</dd></div></dl>
+    </article>
+    <article class="ex">
+      <p class="ex__n">03</p>
+      <h3 class="ex__t">自作アプリ<i lang="en">SELF-BUILT APPLICATION</i></h3>
+      <p class="ex__b">機械が何を見て、何を判定しているのかを開いて見せる。触れる形で。</p>
+      <dl class="ex__s"><div><dt>形式</dt><dd>試遊</dd></div><div><dt>入力</dt><dd>カメラ</dd></div><div><dt>所要</dt><dd>2分</dd></div></dl>
+    </article>
+    <article class="ex">
+      <p class="ex__n">04</p>
+      <h3 class="ex__t">関連研究のポスター<i lang="en">RESEARCH POSTERS</i></h3>
+      <p class="ex__b">問いを立てているのは私たちだけではない。積まれてきた議論を並べる。</p>
+      <dl class="ex__s"><div><dt>形式</dt><dd>掲示</dd></div><div><dt>点数</dt><dd class="tbd">調整中</dd></div><div><dt>言語</dt><dd>日／英</dd></div></dl>
+    </article>
+    <article class="ex">
+      <p class="ex__n">05</p>
+      <h3 class="ex__t">本の販売<i lang="en">BOOKSTORE</i></h3>
+      <p class="ex__b">持ち帰れる境界線。展示を出たあとも考え続けるための一冊を選んで置いています。</p>
+      <dl class="ex__s"><div><dt>形式</dt><dd>物販</dd></div><div><dt>会計</dt><dd class="tbd">調整中</dd></div></dl>
+    </article>
+  </div>
+</section>
+
+<!-- ===== 紙 / AR =============================================== -->
+<section class="sec sec--dark" id="ar">
+  <header class="sec__head">
+    <p class="sec__num">04 <span>／ 紙をかざす <i>HOLD UP THE PAPER</i></span></p>
+    <h2 class="sec__title">あなたには顔が、機械には住所が</h2>
+    <p class="sec__en" lang="en">You see a face. The machine sees an address. Same ink.</p>
+    <p class="sec__note">
+      会場で配っている紙をカメラにかざすと、印刷されていないものが見えます。
+      紙の上では空欄のままのチェック欄に、機械が記入します。
+    </p>
+  </header>
+
+  <div class="ar">
+    <figure class="qr">
+      <img class="qr__img" src="assets/img/halftone-qr.png" width="1095" height="1095"
+           alt="人の顔とロボットの顔が半分ずつ見えるQRコード。同じ模様が機械にはURLとして読める。">
+      <figcaption class="qr__cap">
+        同じインクの、同じ模様です。読み手が変わると、意味が変わる。
+      </figcaption>
+    </figure>
+
+    <div class="ar__side">
+      <dl class="ex__s ex__s--col">
+        <div><dt>誤り訂正 <i>ECC</i></dt><dd>LEVEL H</dd></div>
+        <div><dt>構成 <i>MATRIX</i></dt><dd>65 × 65</dd></div>
+        <div><dt>分割 <i>SUBPIXEL</i></dt><dd>5 × 5 / module</dd></div>
+        <div><dt>絵の領域 <i>IMAGE</i></dt><dd>24 / 25</dd></div>
+        <div><dt>追跡 <i>TRACKING</i></dt><dd>紙面全体 <span>FULL SHEET</span></dd></div>
+      </dl>
+
+      <ol class="how">
+        <li><span>1</span>スマートフォンでこのページを開く <i lang="en">OPEN ON A PHONE</i></li>
+        <li><span>2</span>カメラを許可する <i lang="en">ALLOW CAMERA</i></li>
+        <li><span>3</span>紙全体がフレームに入るようにかざす <i lang="en">FIT THE WHOLE SHEET</i></li>
+      </ol>
+
+      <a class="cta" href="ar/">ARを起動する <b lang="en">LAUNCH AR</b><span aria-hidden="true">→</span></a>
+      <p class="fine">カメラ映像は端末内でのみ処理され、送信も保存もされません。<br>
+        <i lang="en">Video is processed on-device only. Nothing is transmitted or stored.</i></p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 資料 ================================================== -->
+<section class="sec" id="refs">
+  <header class="sec__head">
+    <p class="sec__num">05 <span>／ 参考資料 <i>REFERENCES</i></span></p>
+    <h2 class="sec__title">この問いを、すでに立てた人たち</h2>
+  </header>
+
+  <div class="refs">
+    <div class="refs__col">
+      <h3 class="refs__h">展示 <i>EXHIBITIONS</i></h3>
+      <ul class="refs__l">
+        <li><b>アンドロイド：人間って、なんだ？</b><span>日本科学未来館／石黒浩・オルタ</span></li>
+        <li><b>AI: More than Human</b><span>Barbican, London 2019</span></li>
+        <li><b>未来と芸術展</b><span>森美術館 2019–20</span></li>
+        <li><b>トランスレーションズ展</b><span>21_21 DESIGN SIGHT 2020</span></li>
+        <li><b>オープン・スペース</b><span>ICC 初台／通年・無料</span></li>
+        <li><b>Rhizomatiks Multiplex</b><span>東京都現代美術館 2021</span></li>
+        <li><b>Ars Electronica</b><span>Linz／アーカイブ公開</span></li>
+      </ul>
+    </div>
+    <div class="refs__col">
+      <h3 class="refs__h">映像・ゲーム <i>SCREEN</i></h3>
+      <ul class="refs__l">
+        <li><b>serial experiments lain</b><span>ネットと人の境界／1998</span></li>
+        <li><b>Detroit: Become Human</b><span>境界がゲーム機構そのもの</span></li>
+        <li><b>PSYCHO-PASS</b><span>人を数値化するUI</span></li>
+        <li><b>イヴの時間</b><span>混在する日常</span></li>
+        <li><b>BEATLESS</b><span>—</span></li>
+        <li><b>Ex Machina</b><span>判定する側の視点</span></li>
+        <li><b>R.U.R.</b><span>Čapek 1920／語の発生源</span></li>
+      </ul>
+    </div>
+    <div class="refs__col">
+      <h3 class="refs__h">書籍 <i>BOOKS</i></h3>
+      <ul class="refs__l">
+        <li><b>機械より人間らしくなれるか</b><span>Brian Christian</span></li>
+        <li><b>ロボットとは何か</b><span>石黒浩</span></li>
+        <li><b>未来をつくる言葉</b><span>ドミニク・チェン</span></li>
+      </ul>
+      <h3 class="refs__h refs__h--sp">トーン <i>TONE</i></h3>
+      <ul class="refs__l">
+        <li><b>攻殻機動隊 / NieR:Automata</b><span>明朝＋グリッチ</span></li>
+        <li><b>重慶 / 台湾夜市</b><span>看板の密度 / DENSITY</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p class="foot__t">人とロボットの境界線 <i lang="en">THE LINE BETWEEN HUMAN AND MACHINE</i></p>
+  <p class="foot__s" aria-hidden="true">E5 A2 83 E7 95 8C E7 B7 9A ／ 5aKD55WM57ea ／ ⠅⠽⠕⠥⠅⠁⠊</p>
+</footer>
+
+<div class="tick tick--bottom" aria-hidden="true">
+  <div class="tick__track tick__track--rev">
+    境界は引かれるのではなく、引き直され続ける <span>///</span>
+    <span lang="en">THE LINE IS NOT DRAWN, IT IS REDRAWN</span> <span>///</span>
+    分界線不斷被重畫 <span>///</span> 01001000 01001101 <span>///</span>
+    境界は引かれるのではなく、引き直され続ける <span>///</span>
+    <span lang="en">THE LINE IS NOT DRAWN, IT IS REDRAWN</span> <span>///</span>
+    分界線不斷被重畫 <span>///</span> 01001000 01001101 <span>///</span>
+  </div>
+</div>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
