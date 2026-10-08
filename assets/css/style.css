@@ -137,6 +137,11 @@ main { padding: 2.1rem var(--rail); }
   -webkit-user-select: none; user-select: none;
 }
 
+.hero__org {
+  font-size: .8rem; font-weight: 700; margin-bottom: .8rem;
+}
+.hero__org i { font-family: var(--mono); font-size: .6rem; font-weight: 400; letter-spacing: .14em; color: var(--dim); }
+
 .hero__kicker {
   display: flex; flex-wrap: wrap; gap: .35rem;
   margin-bottom: 1.6rem;
@@ -504,7 +509,6 @@ main { padding: 2.1rem var(--rail); }
   padding-bottom: .5rem; border-bottom: 1px solid var(--line);
 }
 .refs__h i { color: var(--dim2); }
-.refs__h--sp { margin-top: 1.4rem; }
 
 .refs__l li { padding: .55rem 0; border-bottom: 1px solid var(--line); }
 .refs__l b { display: block; font-size: .8rem; font-weight: 400; }
@@ -520,6 +524,12 @@ main { padding: 2.1rem var(--rail); }
 
 .info__links { display: flex; flex-direction: column; gap: 1.1rem; align-items: flex-start; margin-top: 1.4rem; }
 .info__links .fine a { color: var(--dim); }
+.info__about { margin-top: .9rem; font-size: .8rem; color: #aeaba5; }
+
+.foot__r { margin-top: 1rem; font-family: var(--serif); font-size: .95rem; }
+.foot__r a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--dim2); }
+.foot__r a span { color: var(--red); font-size: .7em; margin-right: .3em; }
+.foot__r a:hover { color: var(--cyan); border-color: var(--cyan); }
 
 /* ------------------------------------------------------------------- foot */
 

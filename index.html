@@ -3,17 +3,347 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>人とロボットの境界線 / THE LINE BETWEEN HUMAN AND MACHINE</title>
+<title>人とロボットの境界線 ／ 調布祭2026 ／ THE LINE BETWEEN HUMAN AND MACHINE</title>
 <meta name="description" content="かつて「音」だけで情報を伝え、やがて文字や映像を記録する術を手に入れた人類。機械が自ら思考し語りかける今、人とロボットの境界は何か。">
 <meta property="og:title" content="人とロボットの境界線">
-<meta property="og:description" content="二足歩行ロボットの実演、透過ディスプレイ、AR。人と機械の境界を問う展示。">
+<meta property="og:description" content="調布祭2026 電気通信大学A棟401教室。二足歩行ロボットの実演、透過ディスプレイ、AR。人と機械の境界を問う展示。">
 <meta property="og:type" content="website">
+<!-- 判定画面 -->
+<script>
+(function (d) {
+  var c = d.documentElement.classList;
+  c.add('js', 'gating');
+  try { if (sessionStorage.getItem('gate') === '1') c.add('passed'); } catch (e) {}
+})(document);
+</script>
+<style>
+#gate { display: none; }
+.gating { overflow: hidden; }
+.gating #gate {
+  --gc: #35e8e0; --gr: #ff2040; --gi: #ecebe8; --gd: #6b717b;
+  display: flex; flex-direction: column;
+  position: fixed; inset: 0; z-index: 9999;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+  background: #07080a; color: #aab0ba;
+  font: 11px/1.75 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  overflow: hidden; -webkit-user-select: none; user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.passed #gate > * { display: none; }
+#gate.is-out { clip-path: inset(0 0 0 var(--w, 0%)); }
+#gate .g-line { display: block !important; position: absolute; top: 0; bottom: 0; left: var(--w, 0%); width: 1px;
+  background: var(--gr); box-shadow: 0 0 14px var(--gr); opacity: 0; }
+#gate.is-out .g-line { opacity: 1; }
+
+.g-head { display: flex; align-items: center; gap: 10px; letter-spacing: .16em; color: var(--gd);
+  border-bottom: 1px solid #1e222b; padding-bottom: 6px; margin-bottom: 10px; }
+.g-head b { color: var(--gr); font-weight: 400; }
+#gClock { margin-left: auto; }
+.g-log { list-style: none; margin: 0; padding: 0; flex: 1; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: flex-end; }
+.g-log li { white-space: pre-wrap; word-break: break-all; }
+.g-log .k { color: var(--gd); }
+.g-log .v { color: var(--gi); }
+.g-log .ok { color: var(--gc); }
+.g-log .ng { color: var(--gr); }
+
+.g-box { display: flex; align-items: center; gap: 12px; margin: 14px 0 6px;
+  background: #f9f9f9; color: #222; border: 1px solid #d3d3d3; border-radius: 3px;
+  box-shadow: 0 0 4px 1px rgba(0,0,0,.08); padding: 14px 12px;
+  font: 14px/1.4 -apple-system, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
+  transform-origin: 50% 100%; animation: g-in .25s ease-out both; }
+.g-box[hidden] { display: none; }
+.g-check { flex: 1; display: flex; align-items: center; gap: 12px; padding: 0; border: 0;
+  background: none; font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.g-tick { flex: none; width: 26px; height: 26px; border: 2px solid #c1c1c1; border-radius: 2px;
+  background: #fff; position: relative; }
+.g-check:focus-visible .g-tick { outline: 2px solid #4a90e2; outline-offset: 2px; }
+.is-spin .g-tick { border: 4px solid #4a90e2; border-top-color: transparent; border-radius: 50%;
+  animation: g-spin .7s linear infinite; }
+.is-fail .g-tick { border-color: var(--gr); background: var(--gr); border-radius: 2px; animation: none; }
+.is-fail .g-tick::after { content: "!"; position: absolute; inset: 0; color: #fff;
+  font: 700 18px/22px sans-serif; text-align: center; }
+.g-mark { flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 9px; line-height: 1.3; color: #555; }
+
+.g-verdict { margin: 18px 0 4px; }
+.g-verdict[hidden] { display: none; }
+.g-v1 { position: relative; margin: 0; color: var(--gi);
+  font: 900 clamp(44px, 15vw, 96px)/1.05 "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif; }
+.g-v1::before, .g-v1::after { content: attr(data-t); position: absolute; inset: 0; }
+.g-v1::before { color: var(--gr); clip-path: inset(10% 0 55% 0); transform: translate(-4px, 0); mix-blend-mode: screen; }
+.g-v1::after  { color: var(--gc); clip-path: inset(60% 0 8% 0);  transform: translate(4px, 0);  mix-blend-mode: screen; }
+.g-v2 { margin: 4px 0 0; color: var(--gr); letter-spacing: .3em; }
+.g-v3 { margin: 10px 0 0; color: var(--gi);
+  font: 13px/1.8 -apple-system, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif; }
+.g-go { margin: 12px 0 0; color: var(--gd); letter-spacing: .14em; }
+
+.g-fine { margin: 10px 0 0; color: #4a505a; font-size: 9px; letter-spacing: .04em; }
+.g-skip { flex: none; padding: 2px 8px; border: 1px solid #1e222b; background: #07080a; color: var(--gd);
+  font: inherit; letter-spacing: .16em; cursor: pointer; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .is-glitch { animation: g-shake .32s steps(2) 3; }
+  .is-glitch .g-v1::before { animation: g-slice .9s steps(1) infinite; }
+  .is-glitch .g-v1::after  { animation: g-slice .7s steps(1) infinite reverse; }
+}
+@keyframes g-in { from { opacity: 0; transform: translateY(8px) scale(.98); } }
+@keyframes g-spin { to { transform: rotate(360deg); } }
+@keyframes g-shake {
+  0% { transform: translate(0, 0); } 25% { transform: translate(-6px, 2px); }
+  50% { transform: translate(5px, -3px); } 75% { transform: translate(-2px, 4px); }
+}
+@keyframes g-slice {
+  0%   { clip-path: inset(10% 0 55% 0); transform: translate(-5px, 0); }
+  30%  { clip-path: inset(40% 0 30% 0); transform: translate(6px, 0); }
+  60%  { clip-path: inset(75% 0 2% 0);  transform: translate(-3px, 0); }
+  80%  { clip-path: inset(0 0 85% 0);   transform: translate(4px, 0); }
+}
+</style>
+
+<!-- ===== 第1層：本文のCSS・フォント（非ブロッキング） ============= -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css" media="print" onload="this.media='all'" id="css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@600;900&family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
+<noscript>
 <link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@600;900&family=JetBrains+Mono:wght@400;700&display=swap">
+</noscript>
 </head>
 <body>
+
+<!-- 判定画面 -->
+<div id="gate" role="dialog" aria-label="人間かどうかの判定">
+  <p class="g-head"><span>BOUNDARY CHECK <b>●</b> REC</span><span id="gClock">--:--:--</span><button class="g-skip" id="gSkip" type="button">SKIP ›</button></p>
+  <ol class="g-log" id="gLog" aria-live="polite"></ol>
+  <div class="g-box" id="gBox" hidden>
+    <button class="g-check" id="gCheck" type="button" aria-pressed="false">
+      <span class="g-tick" aria-hidden="true"></span><span id="gLabel">私はロボットではありません</span>
+    </button>
+    <span class="g-mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" width="34" height="34">
+        <path d="M6.15 14.26A10 10 0 0 1 25.4 12.58" fill="none" stroke="#ff2040" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M27.8 11.7L26.4 15.6L23 13.5Z" fill="#ff2040" stroke="#ff2040" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M25.85 17.74A10 10 0 0 1 6.6 19.42" fill="none" stroke="#ff2040" stroke-width="3.4" stroke-linecap="round"/>
+        <path d="M4.2 20.3L5.6 16.4L9 18.5Z" fill="#ff2040" stroke="#ff2040" stroke-width="1.6" stroke-linejoin="round"/>
+      </svg>
+      判定 v0.9
+    </span>
+  </div>
+  <div class="g-verdict" id="gVerdict" hidden>
+    <p class="g-v1" data-t="判定不能">判定不能</p>
+    <p class="g-v2">UNDETERMINED</p>
+    <p class="g-v3">あなたが人間かどうか、機械には決められませんでした。</p>
+    <p class="g-go">TAP TO ENTER ／ タップして展示へ ›</p>
+  </div>
+  <p class="g-fine">端末の情報はこの画面に表示しているだけで、送信も保存もしていません。</p>
+  <span class="g-line" aria-hidden="true"></span>
+</div>
+<script>
+(function () {
+  'use strict';
+  var d = document, n = navigator, root = d.documentElement;
+  var $ = function (id) { return d.getElementById(id); };
+  var gate = $('gate'), log = $('gLog'), box = $('gBox'), check = $('gCheck');
+  var css = $('css');
+  var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var t0 = performance.now();
+  var done = false, tapped = false, failed = false;
+  var tShow = 0, pd = null, ori = null, tilt = null;
+
+  var pad = function (v, w) { v = String(v); while (v.length < w) v = '0' + v; return v; };
+  var buzz = function (p) { try { if (n.vibrate) n.vibrate(p); } catch (e) {} };
+
+  /* ---- ログ ---- */
+
+  var line = function (k, v, cls) {
+    var li = d.createElement('li');
+    var ts = ((performance.now() - t0) / 1000).toFixed(3);
+    var key = d.createElement('span');
+    key.className = 'k';
+    key.textContent = '[' + ('   ' + ts).slice(-7) + '] ' + (k + ' ..............').slice(0, 14) + ' ';
+    var val = d.createElement('span');
+    val.className = cls || 'v';
+    val.textContent = v;
+    li.appendChild(key);
+    li.appendChild(val);
+    log.appendChild(li);
+    while (log.children.length > 60) log.removeChild(log.firstChild);
+  };
+
+  var run = function (list, then) {
+    var i = 0;
+    (function next() {
+      if (done) return;
+      if (i >= list.length) return then && then();
+      var it = list[i++];
+      line(it[0], typeof it[1] === 'function' ? it[1]() : it[1], it[2]);
+      setTimeout(next, reduced ? 0 : (it[3] || 70));
+    })();
+  };
+
+
+  var cssReady = function () { return !css || css.media === 'all'; };
+
+  var whenReady = function (cb) {
+    var limit = Date.now() + 8000, fired = false;
+    var go = function () { if (!fired) { fired = true; cb(); } };
+    (function poll() {
+      if (!cssReady() && Date.now() < limit) return setTimeout(poll, 50);
+      requestAnimationFrame(function () {
+        if (d.fonts) d.fonts.ready.then(go);
+        setTimeout(go, 1500);
+      });
+    })();
+  };
+
+  var close = function () {
+    gate.parentNode.removeChild(gate);
+    root.classList.remove('gating');
+  };
+
+  var finish = function () {
+    if (done) return;
+    done = true;
+    try { sessionStorage.setItem('gate', '1'); } catch (e) {}
+    if (!cssReady()) line('RECV', '本文を受信中…');
+    whenReady(function () {
+      if (reduced || root.classList.contains('passed')) return close();
+      scrollTo(0, 0);
+      gate.classList.add('is-out');
+      var s = performance.now(), D = 700;
+      requestAnimationFrame(function step(now) {
+        var k = Math.min(1, Math.max(0, (now - s) / D));
+        gate.style.setProperty('--w', (k * k * (3 - 2 * k) * 100) + '%');
+        if (k < 1) requestAnimationFrame(step); else close();
+      });
+    });
+  };
+
+  // 同じタブで2回目以降は判定を飛ばし、CSSが届くまで黒で覆うだけにする
+  if (root.classList.contains('passed')) return finish();
+
+  var clock = $('gClock');
+  var stamp = function () {
+    var t = new Date();
+    return pad(t.getHours(), 2) + ':' + pad(t.getMinutes(), 2) + ':' + pad(t.getSeconds(), 2)
+      + '.' + pad(t.getMilliseconds(), 3);
+  };
+  (function tick() { if (!done) { clock.textContent = stamp(); setTimeout(tick, 47); } })();
+
+  /* ---- 端末から読める値 ---- */
+
+  var ua = n.userAgent, m;
+  var os = (m = ua.match(/(iPhone|iPad|iPod).*? OS (\d+)_(\d+)/)) ? m[1] + ' / iOS ' + m[2] + '.' + m[3]
+    : (m = ua.match(/Android ([\d.]+)/)) ? 'Android ' + m[1]
+    : /Windows/.test(ua) ? 'Windows'
+    : /Mac OS X/.test(ua) ? (n.maxTouchPoints > 1 ? 'iPad / iPadOS' : 'macOS')
+    : /Linux/.test(ua) ? 'Linux' : '不明';
+  var browser = /\bLine\//.test(ua) ? 'LINE アプリ内ブラウザ'
+    : /Instagram/.test(ua) ? 'Instagram アプリ内ブラウザ'
+    : (m = ua.match(/Edg\w*\/(\d+)/)) ? 'Edge ' + m[1]
+    : (m = ua.match(/SamsungBrowser\/(\d+)/)) ? 'Samsung Internet ' + m[1]
+    : (m = ua.match(/(?:CriOS|Chrome)\/(\d+)/)) ? 'Chrome ' + m[1]
+    : (m = ua.match(/(?:FxiOS|Firefox)\/(\d+)/)) ? 'Firefox ' + m[1]
+    : (m = ua.match(/Version\/([\d.]+).*Safari/)) ? 'Safari ' + m[1] : '不明';
+  var tz = '不明';
+  try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || tz; } catch (e) {}
+  var net = n.connection;
+  var dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  var langs = (n.languages && n.languages.length ? n.languages.slice(0, 3).join(', ') : n.language) || '不明';
+
+  var fp = 0x811c9dc5, src = [ua, screen.width, screen.height, devicePixelRatio, n.language, tz].join('|');
+  for (var i = 0; i < src.length; i++) { fp ^= src.charCodeAt(i); fp = Math.imul(fp, 16777619) >>> 0; }
+
+  var h1 = 50 + (Math.random() - 0.5) * 6;
+
+  run([
+    ['BOOT', 'boundary-check v0.9 / 人とロボットの境界線研究会', 'v', 140],
+    ['SESSION', '調布祭2026 / 電気通信大学 A棟401'],
+    ['ENTRY', d.referrer ? d.referrer : 'リンク元なし（QR／直接）'],
+    ['TIME', function () { return stamp(); }],
+    ['TIMEZONE', tz],
+    ['LOCALE', langs],
+    ['DEVICE', os],
+    ['BROWSER', browser],
+    ['SCREEN', screen.width + '×' + screen.height + ' @' + (Math.round(devicePixelRatio * 100) / 100) + 'x'],
+    ['VIEWPORT', innerWidth + '×' + innerHeight + ' / ' + (innerWidth < innerHeight ? '縦' : '横')],
+    ['INPUT', n.maxTouchPoints ? 'タッチ ' + n.maxTouchPoints + '点' : 'マウス／キーボード'],
+    ['CPU', n.hardwareConcurrency ? n.hardwareConcurrency + ' 論理コア' : '非公開'],
+    ['MEMORY', n.deviceMemory ? n.deviceMemory + ' GB 以上' : '非公開'],
+    ['NETWORK', net && net.effectiveType ? net.effectiveType + (net.downlink ? ' / ' + net.downlink + ' Mbps' : '') : '非公開'],
+    ['THEME', dark ? 'ダーク' : 'ライト'],
+    ['BODY', function () { return cssReady() ? '受信済み' : '受信中…'; }],
+    ['FINGERPRINT', '0x' + pad(fp.toString(16), 8), 'ok', 260],
+    ['MODEL', '人間／機械 判定モデル 読込 OK', 'ok', 380],
+    ['SCORE', 'HUMAN ' + h1.toFixed(1) + '% / MACHINE ' + (100 - h1).toFixed(1) + '%', 'ng', 260],
+    ['RESULT', '確定できません。追加の確認が必要です', 'ng', 200]
+  ], function () {
+    box.hidden = false;
+    tShow = performance.now();
+  });
+
+  check.addEventListener('pointerdown', function (e) {
+    pd = { type: e.pointerType, x: e.clientX, y: e.clientY, w: e.width, h: e.height, p: e.pressure };
+  });
+
+  window.addEventListener('deviceorientation', function (e) {
+    if (e.beta != null) ori = e;
+  });
+
+  var fail = function () {
+    failed = true;
+    box.classList.remove('is-spin');
+    box.classList.add('is-fail');
+    $('gLabel').textContent = '判定できませんでした';
+    $('gVerdict').hidden = false;
+    gate.classList.add('is-glitch');
+    buzz([60, 40, 60, 40, 220]);
+    line('VERDICT', 'UNDETERMINED ／ 判定不能', 'ng');
+    setTimeout(finish, 3200);
+  };
+
+  check.addEventListener('click', function () {
+    if (tapped) return;
+    tapped = true;
+    var dt = (performance.now() - tShow) / 1000;
+    buzz(12);
+
+    // iOS は傾きセンサーの許可にユーザー操作が要る。このタップで取る
+    var DOE = window.DeviceOrientationEvent;
+    if (DOE && typeof DOE.requestPermission === 'function') {
+      DOE.requestPermission().then(function (s) { tilt = s; }, function () { tilt = 'denied'; });
+    } else {
+      tilt = 'granted';
+    }
+
+    box.classList.add('is-spin');
+    check.setAttribute('aria-pressed', 'true');
+    run([
+      ['REACTION', dt.toFixed(2) + ' 秒', 'v', 160],
+      ['TOUCH', pd ? pd.type + ' / (' + Math.round(pd.x) + ', ' + Math.round(pd.y) + ')'
+        + (pd.w > 1 ? ' / 接地 ' + Math.round(pd.w) + '×' + Math.round(pd.h) + ' px' : '') : 'キーボード', 'v', 160],
+      ['PRESSURE', pd && pd.p && pd.p !== 0.5 ? pd.p.toFixed(2) : '取得不可', 'v', 220],
+      ['TILT', function () {
+        return ori ? 'β ' + ori.beta.toFixed(1) + '° / γ ' + ori.gamma.toFixed(1) + '°'
+          : tilt === null ? '許可待ち' : '取得不可';
+      }, 'v', 300],
+      ['BLINK', '未検出', 'ng', 260],
+      ['PULSE', '取得不可', 'ng', 260],
+      ['RE-SCORE', 'HUMAN 50.0% / MACHINE 50.0%', 'ng', 420]
+    ], fail);
+  });
+
+  gate.addEventListener('click', function (e) {
+    if (failed && !check.contains(e.target)) finish();
+  });
+  $('gSkip').addEventListener('click', function (e) {
+    e.stopPropagation();
+    finish();
+  });
+})();
+</script>
 
 <a class="skip" href="#main">本文へスキップ</a>
 
@@ -42,6 +372,8 @@
 <!-- ===== HERO ================================================== -->
 <section class="hero">
   <span class="hero__ghost" aria-hidden="true">境</span>
+
+  <p class="hero__org">人とロボットの境界線研究会 <i>／ 調布祭2026 出展</i></p>
 
   <p class="hero__kicker">
     <span class="chip chip--red">EXHIBITION 展示</span>
@@ -81,7 +413,7 @@
     <dl class="spec">
       <div><dt>会期 <i>DATES</i></dt><dd><a href="#info">2026.11.20 – 22</a></dd></div>
       <div><dt>会場 <i>VENUE</i></dt><dd><a href="#info">電気通信大学 A棟401</a></dd></div>
-      <div><dt>入場 <i>ADMISSION</i></dt><dd class="tbd">調整中</dd></div>
+      <div><dt>入場 <i>ADMISSION</i></dt><dd>無料 FREE</dd></div>
       <div><dt>展示数 <i>WORKS</i></dt><dd>05</dd></div>
       <div><dt>体験 <i>MODES</i></dt><dd>AR / 実演 / 試遊</dd></div>
     </dl>
@@ -325,11 +657,6 @@
         <li><b>ロボットとは何か</b><span>石黒浩</span></li>
         <li><b>未来をつくる言葉</b><span>ドミニク・チェン</span></li>
       </ul>
-      <h3 class="refs__h refs__h--sp">トーン <i>TONE</i></h3>
-      <ul class="refs__l">
-        <li><b>攻殻機動隊 / NieR:Automata</b><span>明朝＋グリッチ</span></li>
-        <li><b>重慶 / 台湾夜市</b><span>看板の密度 / DENSITY</span></li>
-      </ul>
     </div>
   </div>
 </section>
@@ -361,13 +688,21 @@
           <i lang="en">BARRIER-FREE MAP</i></p>
       </div>
     </div>
+    <div class="refs__col">
+      <h3 class="refs__h">出展団体 <i>ORGANIZER</i></h3>
+      <ul class="refs__l">
+        <li><b>人とロボットの境界線研究会</b><span>THE LINE BETWEEN HUMAN AND MACHINE</span></li>
+      </ul>
+      <p class="info__about">ロボットの研究をしている大学生が、有志で集まった団体です。調布祭2026では「人とロボットの境界線」をテーマに展示を行います。</p>
+    </div>
   </div>
 </section>
 
 </main>
 
 <footer class="foot">
-  <p class="foot__t">人とロボットの境界線 <i lang="en">THE LINE BETWEEN HUMAN AND MACHINE</i></p>
+  <p class="foot__t">人とロボットの境界線研究会 <i lang="en">THE LINE BETWEEN HUMAN AND MACHINE ／ CHOFUSAI 2026</i></p>
+  <p class="foot__r"><a href="#" id="regate"><span aria-hidden="true">▶</span> もう一度判定を受ける</a></p>
   <p class="foot__s" aria-hidden="true">E5 A2 83 E7 95 8C E7 B7 9A ／ 5aKD55WM57ea ／ ⠅⠽⠕⠥⠅⠁⠊</p>
 </footer>
 
