@@ -46,8 +46,12 @@
 .g-log .v { color: var(--gi); }
 .g-log .ok { color: var(--gc); }
 .g-log .ng { color: var(--gr); }
+.is-asking .g-log { opacity: .35; transition: opacity .3s; }
 
-.g-box { display: flex; align-items: center; gap: 12px; margin: 14px 0 6px;
+.g-stage { position: absolute; top: 50%; left: 16px; right: 16px; z-index: 1;
+  max-width: 420px; margin-inline: auto; transform: translateY(-50%); }
+
+.g-box { display: flex; align-items: center; gap: 12px;
   background: #f9f9f9; color: #222; border: 1px solid #d3d3d3; border-radius: 3px;
   box-shadow: 0 0 4px 1px rgba(0,0,0,.08); padding: 14px 12px;
   font: 14px/1.4 -apple-system, "Hiragino Sans", "Yu Gothic UI", "Meiryo", sans-serif;
@@ -66,7 +70,8 @@
 .g-mark { flex: none; display: flex; flex-direction: column; align-items: center; gap: 2px;
   font-size: 9px; line-height: 1.3; color: #555; }
 
-.g-verdict { margin: 18px 0 4px; }
+.g-verdict { position: absolute; top: 100%; left: 0; right: 0; margin-top: 10px;
+  padding: 12px 12px 14px; background: rgba(7, 8, 10, .92); border: 1px solid #1e222b; }
 .g-verdict[hidden] { display: none; }
 .g-v1 { position: relative; margin: 0; color: var(--gi);
   font: 900 clamp(44px, 15vw, 96px)/1.05 "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif; }
@@ -117,25 +122,27 @@
 <div id="gate" role="dialog" aria-label="人間かどうかの判定">
   <p class="g-head"><span>BOUNDARY CHECK <b>●</b> REC</span><span id="gClock">--:--:--</span><button class="g-skip" id="gSkip" type="button">SKIP ›</button></p>
   <ol class="g-log" id="gLog" aria-live="polite"></ol>
-  <div class="g-box" id="gBox" hidden>
-    <button class="g-check" id="gCheck" type="button" aria-pressed="false">
-      <span class="g-tick" aria-hidden="true"></span><span id="gLabel">私はロボットではありません</span>
-    </button>
-    <span class="g-mark" aria-hidden="true">
-      <svg viewBox="0 0 32 32" width="34" height="34">
-        <path d="M6.15 14.26A10 10 0 0 1 25.4 12.58" fill="none" stroke="#ff2040" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M27.8 11.7L26.4 15.6L23 13.5Z" fill="#ff2040" stroke="#ff2040" stroke-width="1.6" stroke-linejoin="round"/>
-        <path d="M25.85 17.74A10 10 0 0 1 6.6 19.42" fill="none" stroke="#ff2040" stroke-width="3.4" stroke-linecap="round"/>
-        <path d="M4.2 20.3L5.6 16.4L9 18.5Z" fill="#ff2040" stroke="#ff2040" stroke-width="1.6" stroke-linejoin="round"/>
-      </svg>
-      判定 v0.9
-    </span>
-  </div>
-  <div class="g-verdict" id="gVerdict" hidden>
-    <p class="g-v1" data-t="判定不能">判定不能</p>
-    <p class="g-v2">UNDETERMINED</p>
-    <p class="g-v3">あなたが人間かどうか、機械には決められませんでした。</p>
-    <p class="g-go">TAP TO ENTER ／ タップして展示へ ›</p>
+  <div class="g-stage">
+    <div class="g-box" id="gBox" hidden>
+      <button class="g-check" id="gCheck" type="button" aria-pressed="false">
+        <span class="g-tick" aria-hidden="true"></span><span id="gLabel">私はロボットではありません</span>
+      </button>
+      <span class="g-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="34" height="34">
+          <path d="M6.15 14.26A10 10 0 0 1 25.4 12.58" fill="none" stroke="#ff2040" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M27.8 11.7L26.4 15.6L23 13.5Z" fill="#ff2040" stroke="#ff2040" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M25.85 17.74A10 10 0 0 1 6.6 19.42" fill="none" stroke="#ff2040" stroke-width="3.4" stroke-linecap="round"/>
+          <path d="M4.2 20.3L5.6 16.4L9 18.5Z" fill="#ff2040" stroke="#ff2040" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+        判定 v0.9
+      </span>
+    </div>
+    <div class="g-verdict" id="gVerdict" hidden>
+      <p class="g-v1" data-t="判定不能">判定不能</p>
+      <p class="g-v2">UNDETERMINED</p>
+      <p class="g-v3">あなたが人間かどうか、機械には決められませんでした。</p>
+      <p class="g-go">TAP TO ENTER ／ タップして展示へ ›</p>
+    </div>
   </div>
   <p class="g-fine">端末の情報はこの画面に表示しているだけで、送信も保存もしていません。</p>
   <span class="g-line" aria-hidden="true"></span>
@@ -281,6 +288,7 @@
     ['RESULT', '確定できません。追加の確認が必要です', 'ng', 200]
   ], function () {
     box.hidden = false;
+    gate.classList.add('is-asking');
     tShow = performance.now();
   });
 
