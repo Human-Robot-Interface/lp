@@ -25,10 +25,27 @@
     const roMachine = document.getElementById('roMachine');
     const roState = document.getElementById('roState');
 
-    human.textContent = chars.join('');
-    machine.textContent = chars
-      .map(ch => 'U+' + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0'))
-      .join('  ');
+
+    const toSpan = (text) => {
+      const el = document.createElement('span');
+      el.textContent = text;
+      return el;
+    };
+    const humanSpans = chars.map(toSpan);
+    const machineSpans = chars.map(ch =>
+      toSpan('U+' + ch.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')));
+    human.replaceChildren(...humanSpans);
+    machineSpans.forEach((el, i) => {
+      if (i) machine.append('  ');
+      machine.append(el);
+    });
+
+
+    const countSide = (spans, x, left) => spans.filter(el => {
+      const r = el.getBoundingClientRect();
+      const c = (r.left + r.right) / 2;
+      return left ? c < x : c > x;
+    }).length;
 
     let pos = 50;
     let drifting = !reduced;   // 触られるまでは境界がゆっくり呼吸する
@@ -39,13 +56,16 @@
       handle.setAttribute('aria-valuenow', Math.round(pos));
 
       if (!roPos) return;
-      const h = Math.round(chars.length * pos / 100);
+      const rect = split.getBoundingClientRect();
+      const x = rect.left + rect.width * pos / 100;
+      const h = countSide(humanSpans, x, true);
+      const m = countSide(machineSpans, x, false);
       roPos.textContent = pos.toFixed(1) + '%';
       roHuman.textContent = h + ' 字';
-      roMachine.textContent = (chars.length - h) + ' 字';
+      roMachine.textContent = m + ' 字';
       roState.textContent =
-        pos <= 1 ? '機械のみ / MACHINE'
-        : pos >= 99 ? '人間のみ / HUMAN'
+        h === 0 ? '機械のみ / MACHINE'
+        : m === 0 ? '人間のみ / HUMAN'
         : '境界上 / ON THE LINE';
     };
 
@@ -82,6 +102,9 @@
       requestAnimationFrame(drift);
     };
     setPos(pos);
+
+    if (document.fonts) document.fonts.ready.then(() => setPos(pos));
+    window.addEventListener('resize', () => setPos(pos));
     if (!reduced) requestAnimationFrame(drift);
   }
 
