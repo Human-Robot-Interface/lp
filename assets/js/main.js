@@ -74,25 +74,10 @@
       setPos(((ev.clientX - rect.left) / rect.width) * 100);
     };
 
-    let held = false;
-    let lastHeld = 0;
-
     split.addEventListener('pointerdown', (ev) => {
       drifting = false;
-      held = true;
       split.setPointerCapture(ev.pointerId);
       fromEvent(ev);
-    });
-
-    const release = () => { held = false; lastHeld = performance.now(); };
-    split.addEventListener('pointerup', release);
-    split.addEventListener('pointercancel', release);
-
-    // 判定画面で傾きセンサーを許可していれば、端末を傾けて境界を動かせる
-    window.addEventListener('deviceorientation', (ev) => {
-      if (ev.gamma == null || held || performance.now() - lastHeld < 1500) return;
-      drifting = false;
-      setPos(50 + ev.gamma * 1.6);
     });
 
     split.addEventListener('pointermove', (ev) => {
