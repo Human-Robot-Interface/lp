@@ -150,7 +150,7 @@
   var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var t0 = performance.now();
   var done = false, tapped = false, failed = false;
-  var tShow = 0, pd = null, ori = null, tilt = null;
+  var tShow = 0, pd = null;
 
   var pad = function (v, w) { v = String(v); while (v.length < w) v = '0' + v; return v; };
   var buzz = function (p) { try { if (n.vibrate) n.vibrate(p); } catch (e) {} };
@@ -288,10 +288,6 @@
     pd = { type: e.pointerType, x: e.clientX, y: e.clientY, w: e.width, h: e.height, p: e.pressure };
   });
 
-  window.addEventListener('deviceorientation', function (e) {
-    if (e.beta != null) ori = e;
-  });
-
   var fail = function () {
     failed = true;
     box.classList.remove('is-spin');
@@ -310,14 +306,6 @@
     var dt = (performance.now() - tShow) / 1000;
     buzz(12);
 
-    // iOS は傾きセンサーの許可にユーザー操作が要る。このタップで取る
-    var DOE = window.DeviceOrientationEvent;
-    if (DOE && typeof DOE.requestPermission === 'function') {
-      DOE.requestPermission().then(function (s) { tilt = s; }, function () { tilt = 'denied'; });
-    } else {
-      tilt = 'granted';
-    }
-
     box.classList.add('is-spin');
     check.setAttribute('aria-pressed', 'true');
     run([
@@ -325,10 +313,6 @@
       ['TOUCH', pd ? pd.type + ' / (' + Math.round(pd.x) + ', ' + Math.round(pd.y) + ')'
         + (pd.w > 1 ? ' / 接地 ' + Math.round(pd.w) + '×' + Math.round(pd.h) + ' px' : '') : 'キーボード', 'v', 160],
       ['PRESSURE', pd && pd.p && pd.p !== 0.5 ? pd.p.toFixed(2) : '取得不可', 'v', 220],
-      ['TILT', function () {
-        return ori ? 'β ' + ori.beta.toFixed(1) + '° / γ ' + ori.gamma.toFixed(1) + '°'
-          : tilt === null ? '許可待ち' : '取得不可';
-      }, 'v', 300],
       ['BLINK', '未検出', 'ng', 260],
       ['PULSE', '取得不可', 'ng', 260],
       ['RE-SCORE', 'HUMAN 50.0% / MACHINE 50.0%', 'ng', 420]
