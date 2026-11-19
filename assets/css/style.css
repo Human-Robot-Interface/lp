@@ -444,6 +444,37 @@ main { padding: 2.1rem var(--rail); }
 .ex__s--col { flex-direction: column; align-items: stretch; padding-top: 0; }
 .ex__s--col div { justify-content: space-between; }
 
+/* 配置図。展示案内の図（445:340）をそのまま比率で置く */
+.floor {
+  position: relative; aspect-ratio: 445 / 340;
+  max-width: 34rem; margin: 0 0 1.6rem;
+  border: 1px solid var(--line); background: var(--bg2);
+}
+.floor__cell { position: absolute; border: 1px solid var(--dim2); }
+.floor__cell a {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 100%;
+  font-family: var(--mono); font-size: clamp(.9rem, 3.5vw, 1.3rem);
+  color: var(--cyan); text-decoration: none;
+  transition: background .25s;
+}
+.floor__cell a:hover, .floor__cell a:focus-visible { background: rgba(53, 232, 224, .1); }
+/* 廊下側の目印。A の左に点線を引き、その左に縦書きで添える。
+   点線は B の上端〜A の下端までにして、下の FLOOR MAP の文字にかけない */
+.floor__side {
+  position: absolute; left: 18%; top: 4.7%; bottom: 12.9%;
+  border-left: 2px dotted var(--dim);
+}
+.floor__side span {
+  position: absolute; right: .35rem; top: 50%; transform: translateY(-50%);
+  writing-mode: vertical-rl; white-space: nowrap;
+  font-size: .8rem; letter-spacing: .4em; color: var(--dim);
+}
+.floor__label {
+  position: absolute; left: .6rem; bottom: .45rem;
+  font-family: var(--mono); font-size: .53rem; letter-spacing: .14em; color: var(--dim2);
+}
+
 /* --------------------------------------------------------------------- AR */
 
 .ar {
