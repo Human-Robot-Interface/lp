@@ -4,22 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>AR | 人とロボットの境界線</title>
-<meta name="description" content="配布された紙をかざすと、印刷されていないものが見えます。">
+<meta name="description" content="ロボットアームにカメラを向けると、動画が流れます。">
 
 <!--
-  画像トラッキングには MindAR を使う。
+  AR はこの1ページにまとめている。画像トラッキングには MindAR を使う。
   iOS Safari は WebXR の image tracking に対応していないため、
   getUserMedia 上で自前追跡する MindAR / 8th Wall しか実用的な選択肢がない。
 
-  ■ targets.mind の作り方
-    1. https://hiukim.github.io/mind-ar-js-doc/tools/compile を開く
-    2. 配布する紙面のPNG（tools/make_sheet.py の出力）をアップロード
-    3. 出力された targets.mind をこのフォルダに置く
+  ■ 登録画像（targets.mind）
+    コンパイラに入れた順番が targetIndex になる。この順で入れること。
+      0: target.jpg       … SO-101 の動画（IMG_1793.MOV）の最初のコマ全体
+      1: target_sign.jpg  … 同じコマから「フォローアーム 危ないから触らないで！」の
+                            貼り紙だけを切り出したもの
+      2: 配布する紙面の PNG（tools/make_sheet.py の出力）… まだ入れていない
+    作り方:
+      1. https://hiukim.github.io/mind-ar-js-doc/tools/compile を開く
+      2. 上の画像を順番どおりに1枚ずつ入れて Start
+      3. ダウンロードした .mind を targets.mind という名前でこのフォルダに置く
+    targets.mind に入っていない番号の <a-entity> は使われないだけで、害はない。
+    紙面を足すときは 0, 1 も含めて3枚で作り直し、下のゲートの文言も紙に触れる形に直す。
 
-  ■ 重要
+  ■ 紙面のマーカーについて
     マーカーにするのは「QR単体」ではなく「紙面全体」。QRの格子は自己相似で
-    特徴点が乏しく、追跡が安定しない。紙面のタイトル・帯・CAPTCHA枠まで
-    含めた非対称な絵をターゲットにすること。
+    特徴点が乏しく、追跡が安定しない。
+
+  ■ 動画（so101.mp4）
+    IMG_1793.MOV（iPhone 縦撮り 1080x1920・約23秒）を 720x1280 の H.264 に変換し、
+    音声は外してある。そのため muted のまま自動再生でき、音の許可は要らない。
+    IMG_1793.MOV は重いので .gitignore で Git から外している。
+
+  ■ 背景（カメラ映像）について
+    MindAR はカメラ映像の <video> を body の中に z-index:-2 で置く。
+    body に背景色を付けると、その背景色が映像より手前に描かれて画面が真っ黒になる。
+    背景色は html にだけ付け、body は透明のままにすること。
 -->
 <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
@@ -31,10 +48,13 @@
     --sans: "Noto Sans JP", "Yu Gothic", "Hiragino Kaku Gothic ProN", system-ui, sans-serif;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--ink); font-family: var(--sans); }
+  /* 背景色は html にだけ付ける。body に付けるとカメラ映像が隠れる（上のコメント参照） */
+  html { height: 100%; background: var(--bg); }
+  body { margin: 0; height: 100%; background: transparent; color: var(--ink); font-family: var(--sans); }
   a { color: inherit; }
 
   .ui { position: fixed; inset: 0; z-index: 10; pointer-events: none; }
+  .ui[hidden] { display: none; }
 
   .ui__bar {
     position: absolute; top: 0; left: 0; right: 0;
@@ -78,16 +98,25 @@
     border: 1px solid var(--red); padding: .7rem .9rem; margin: 0;
   }
   .gate__err[hidden] { display: none; }
+
+  /* テクスチャの元になる video。画面には出さない */
+  #vid { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 </style>
 </head>
 <body>
 
+<!--
+  video は a-assets に入れない。a-assets は中の素材の読み込みを待ってから
+  シーンを始めるため、動画が重いと起動が止まる。外に置いて #vid で参照する。
+-->
+<video id="vid" src="./so101.mp4" preload="auto" loop muted playsinline webkit-playsinline></video>
+
 <div class="gate" id="gate">
   <p class="gate__org">人とロボットの境界線</p>
-  <h1 class="gate__title">紙をかざしてください</h1>
+  <h1 class="gate__title">ロボットアームに<br>カメラを向けてください</h1>
   <p class="gate__body">
-    配布された紙の全体がフレームに入るようにしてください。
-    紙の上では空欄のままのチェック欄に、機械が記入します。
+    アームと、机の上の貼り紙が画面に入るようにしてください。
+    見つかると、その上に動画が流れます。
   </p>
   <button class="gate__btn" id="start">カメラを起動する</button>
   <p class="gate__note">映像は端末内でのみ処理され、送信も保存もされません。</p>
@@ -99,7 +128,7 @@
     <span class="ui__org">SCANNING</span>
     <a class="ui__back" href="../">もどる</a>
   </div>
-  <p class="ui__status" id="status">紙を探しています <b>...</b></p>
+  <p class="ui__status" id="status">探しています <b>...</b></p>
 </div>
 
 <a-scene
@@ -110,10 +139,6 @@
   vr-mode-ui="enabled: false"
   device-orientation-permission-ui="enabled: false">
 
-  <a-assets>
-    <!-- 紙面に重ねる素材を置く場合はここに <img id="..."> を足す -->
-  </a-assets>
-
   <!-- クリック判定は使わないので cursor / raycaster は載せない
        （載せると raycaster.objects 未指定の警告が出るうえ無駄に重い） -->
   <a-camera position="0 0 0"
@@ -121,16 +146,33 @@
             wasd-controls="enabled: false"></a-camera>
 
   <!--
-    targetIndex: 0 = targets.mind の1枚目。
+    ===== SO-101（0, 1）=====
+    座標の単位は「その登録画像の幅 = 1」、原点は登録画像の中心、上が +Y。
+    動画の板は、撮影したときの画面全体（= target.jpg）とぴったり重なる位置に置く。
+      0: target.jpg そのものなので 幅 1・中心 (0, 0)
+      1: 貼り紙の切り出し（元画像 1080x1920 の x=60, y=1120 から 940x500）なので、
+         幅 = 1080 / 940 = 1.149
+         中心 = ((540 - 530) / 940, (1370 - 960) / 940) = (0.011, 0.436)
+    板の高さは動画の縦横比から JS で決める。
+  -->
+  <a-entity class="robot" mindar-image-target="targetIndex: 0">
+    <a-video class="screen" src="#vid" width="1" position="0 0 0.01"></a-video>
+  </a-entity>
 
-    座標系は「マーカー画像の幅 = 1」。原点は紙の中心、上が +Y。
+  <a-entity class="robot" mindar-image-target="targetIndex: 1">
+    <a-video class="screen" src="#vid" width="1.149" position="0.011 0.436 0.01"></a-video>
+  </a-entity>
+
+  <!--
+    ===== 配布する紙（2）=====
+    座標系は「紙面の幅 = 1」。原点は紙の中心、上が +Y。
     A4縦(210x297mm)なので上下端は y = ±0.707。
 
     下の座標は目分量ではなく make_sheet.py が実測して出力したもの。
     紙面のレイアウトを変えたら make_sheet.py を再実行し、
     出力された「ARオーバーレイ座標」で置き換えること。
   -->
-  <a-entity mindar-image-target="targetIndex: 0" id="target">
+  <a-entity id="paper" mindar-image-target="targetIndex: 2">
 
     <!-- CAPTCHA欄に入るチェック。紙の上では永久に空欄のままの箇所。
          make_sheet.py 実測値: 中心 (-0.166, -0.031) / 枠の幅 0.039 -->
@@ -165,18 +207,32 @@
 (() => {
   'use strict';
 
-  const gate   = document.getElementById('gate');
-  const err    = document.getElementById('err');
-  const ui     = document.getElementById('ui');
-  const status = document.getElementById('status');
-  const scene  = document.getElementById('scene');
-  const target = document.getElementById('target');
+  const $ = (id) => document.getElementById(id);
+  const gate    = $('gate');
+  const err     = $('err');
+  const ui      = $('ui');
+  const status  = $('status');
+  const scene   = $('scene');
+  const vid     = $('vid');
+  const btn     = $('start');
+  const paper   = $('paper');
+  const robots  = document.querySelectorAll('.robot');
+  const screens = document.querySelectorAll('.screen');
 
-  const btn = document.getElementById('start');
+  const SEARCHING = '探しています <b>...</b>';
 
   const fail = (msg) => {
     err.textContent = msg;
     err.hidden = false;
+  };
+
+  const exists = async (url) => {
+    try {
+      const res = await fetch(url, { method: 'HEAD' });
+      return res.ok;
+    } catch (e) {
+      return false;
+    }
   };
 
   /* 起動前に環境を検査する。ここを通さないと、原因の違う失敗が
@@ -194,13 +250,13 @@
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       return 'このブラウザはカメラ入力に対応していません。';
     }
-    try {
-      const res = await fetch('./targets.mind', { method: 'HEAD' });
-      if (!res.ok) throw new Error(String(res.status));
-    } catch (e) {
-      return 'targets.mind が見つかりません。MindAR のコンパイラで紙面から'
+    if (!(await exists('./targets.mind'))) {
+      return 'targets.mind が見つかりません。MindAR のコンパイラで登録画像から'
            + '生成して ar/ に置いてください。'
            + ' https://hiukim.github.io/mind-ar-js-doc/tools/compile';
+    }
+    if (!(await exists('./so101.mp4'))) {
+      return 'so101.mp4 が見つかりません。ar/ に置いてください。';
     }
     return null;
   };
@@ -212,6 +268,17 @@
     btn.textContent = '起動できません';
   });
 
+  // 動画の板の高さを、動画の実際の縦横比に合わせる（幅は各板の width のまま）
+  const fitScreens = () => {
+    if (!vid.videoWidth) return;
+    const ratio = vid.videoHeight / vid.videoWidth;
+    screens.forEach((s) => {
+      s.setAttribute('height', Number(s.getAttribute('width')) * ratio);
+    });
+  };
+  vid.addEventListener('loadedmetadata', fitScreens);
+  fitScreens();
+
   btn.addEventListener('click', async () => {
     const sys = scene.systems && scene.systems['mindar-image-system'];
     if (!sys) {
@@ -220,6 +287,10 @@
     }
     const problem = await preflight();
     if (problem) { fail(problem); return; }
+
+    // タップの中で一度再生しておく。iOS はこれをしないと、
+    // あとから targetFound で play() しても止められることがある。
+    vid.play().then(() => vid.pause()).catch(() => {});
 
     btn.disabled = true;
     try {
@@ -233,27 +304,45 @@
     }
   });
 
-  // マーカー検出でオーバーレイを出す。チェック → 判定 の順で見せる
-  const show = (el, s) => el.setAttribute('scale', s + ' ' + s + ' ' + s);
+  /* ----- SO-101：どれか1枚でも見つかっていれば再生。全部見失ったら一時停止 ----- */
+  let robotTracking = 0;
+  robots.forEach((t) => {
+    t.addEventListener('targetFound', () => {
+      robotTracking++;
+      status.innerHTML = 'SO-101 を検出 <b>/ 再生中</b>';
+      vid.play().catch(() => {
+        status.innerHTML = '動画を再生できません <b>/ 再読み込みしてください</b>';
+      });
+    });
+    t.addEventListener('targetLost', () => {
+      robotTracking = Math.max(0, robotTracking - 1);
+      if (robotTracking > 0) return;
+      vid.pause();
+      status.innerHTML = SEARCHING;
+    });
+  });
+
+  /* ----- 配布する紙：枠 → チェック → 判定 の順で見せる ----- */
+  const show = (id, s) => $(id).setAttribute('scale', s + ' ' + s + ' ' + s);
   let timer = null;
 
-  target.addEventListener('targetFound', () => {
+  paper.addEventListener('targetFound', () => {
     status.innerHTML = '紙を検出 <b>/ 照合中</b>';
-    show(document.getElementById('frame'), 1);
+    show('frame', 1);
     clearTimeout(timer);
     timer = setTimeout(() => {
-      show(document.getElementById('check'), 1);
+      show('check', 1);
       timer = setTimeout(() => {
-        show(document.getElementById('verdict'), 1);
+        show('verdict', 1);
         status.innerHTML = '判定 <b>確定できません</b>';
       }, 1100);
     }, 500);
   });
 
-  target.addEventListener('targetLost', () => {
+  paper.addEventListener('targetLost', () => {
     clearTimeout(timer);
-    status.innerHTML = '紙を探しています <b>...</b>';
-    ['frame', 'check', 'verdict'].forEach(id => show(document.getElementById(id), 0));
+    ['frame', 'check', 'verdict'].forEach((id) => show(id, 0));
+    if (robotTracking === 0) status.innerHTML = SEARCHING;
   });
 })();
 </script>

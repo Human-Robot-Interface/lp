@@ -161,6 +161,13 @@ python tools/make_sheet.py \
 `ar/index.html` は MindAR の画像トラッキングを使う。iOS Safari は WebXR の
 image tracking に対応していないため、実用的な選択肢はこれか 8th Wall になる。
 
+AR はこの1ページにまとめている。SO-101（ロボットアーム）にカメラを向けると
+`ar/so101.mp4` が重なって流れ、配布する紙をかざすとチェック欄に機械が記入する
+（紙は登録画像がまだなので未対応）。
+
+**背景が真っ黒になるとき。** MindAR はカメラ映像を `body` の中に `z-index:-2`
+で置くため、`body` に背景色を付けると映像が隠れる。背景色は `html` にだけ付ける。
+
 ### 動かすための前提（ここで必ず一度つまずく）
 
 **1. `file://` で開かない。**
@@ -186,8 +193,13 @@ LAN の `http://192.168.x.x` でも起動しない。実機のスマホで試す
 ### targets.mind の作り方
 
 1. https://hiukim.github.io/mind-ar-js-doc/tools/compile を開く
-2. **紙面全体のPNG**（`make_sheet.py` の出力）をアップロード
-3. 出力された `targets.mind` を `ar/` に置く
+2. 次の画像を**この順番で**1枚ずつ入れて Start（入れた順が `targetIndex` になる）
+   0. `ar/target.jpg` — SO-101 の動画の最初のコマ
+   1. `ar/target_sign.jpg` — 同じコマの貼り紙だけを切り出したもの
+   2. **紙面全体のPNG**（`make_sheet.py` の出力）— まだ入れていない
+3. ダウンロードしたものを `targets.mind` という名前で `ar/` に置く
+
+今の `ar/targets.mind` は 0 と 1 だけで作ってある。紙面を足すときは3枚で作り直す。
 
 > **マーカーはQR単体ではなく紙面全体にすること。**
 > QRの格子は自己相似で特徴点に乏しく、追跡が安定しない。タイトル・帯・
@@ -218,6 +230,6 @@ LAN の `http://192.168.x.x` でも起動しない。実機のスマホで試す
 ## 差し替えが必要なもの
 
 - [ ] `assets/img/halftone-qr.png` — 実URLと本番の画像で再生成
-- [ ] `ar/targets.mind` — 未生成。上記手順で作成
+- [ ] `ar/targets.mind` — SO-101 の2枚だけで生成済み。紙面ができたら3枚で作り直す
 - [ ] `index.html` の会期・会場・入場（現在すべて「調整中」）
 - [ ] `index.html` の OGP 画像
