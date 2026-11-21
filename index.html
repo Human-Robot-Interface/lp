@@ -109,10 +109,10 @@
 <!-- ===== 第1層：本文のCSS・フォント（非ブロッキング） ============= -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="assets/css/style.css?v=20261119c" media="print" onload="this.media='all'" id="css">
+<link rel="stylesheet" href="assets/css/style.css?v=20261122" media="print" onload="this.media='all'" id="css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@600;900&family=JetBrains+Mono:wght@400;700&display=swap" media="print" onload="this.media='all'">
 <noscript>
-<link rel="stylesheet" href="assets/css/style.css?v=20261119c">
+<link rel="stylesheet" href="assets/css/style.css?v=20261122">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Noto+Serif+JP:wght@600;900&family=JetBrains+Mono:wght@400;700&display=swap">
 </noscript>
 </head>
@@ -534,62 +534,64 @@
     <h2 class="sec__title">展示内容</h2>
   </header>
 
-  <!-- 会場の配置図。座標は展示案内の図から比率で取ったもの（枠全体 = 100%）。 -->
-  <div class="floor" role="img" aria-label="会場の配置図。左側が廊下側。左下にA、中央にEとその下にF、上にB、BとEの間にG、右上にC、右側にD。">
-    <span class="floor__cell" style="left:22.7%;top:46.8%;width:15.3%;height:40.3%"><a href="#ex-a">A</a></span>
-    <span class="floor__cell" style="left:43.6%;top:4.7%;width:30.1%;height:18.8%"><a href="#ex-b">B</a></span>
-    <span class="floor__cell" style="left:81.1%;top:4.7%;width:15.1%;height:24.7%"><a href="#ex-c">C</a></span>
-    <span class="floor__cell" style="left:81.1%;top:35.9%;width:15.1%;height:38.5%"><a href="#ex-d">D</a></span>
-    <span class="floor__cell" style="left:41.1%;top:46.2%;width:16.6%;height:27.1%"><a href="#ex-e">E</a></span>
-    <span class="floor__cell" style="left:41.1%;top:74.7%;width:29.7%;height:20.6%"><a href="#ex-f">F</a></span>
-    <!-- G は正方形。図の縦横比が 445:340 なので、高さ 16% に対して幅は 16×340/445 ≈ 12.2% -->
-    <span class="floor__cell" style="left:43.6%;top:26.9%;width:12.2%;height:16%"><a href="#ex-g">G</a></span>
-    <span class="floor__side"><span>廊下側</span></span>
+  <!-- 会場の配置図。座標は展示案内の図から比率で取ったもの（.floor__room = 100%）。
+       下側が廊下側。.floor__room の下に帯を足し、そこに点線と「廊下側」を置く。 -->
+  <div class="floor" role="img" aria-label="会場の配置図。下側が廊下側。上の段に左からB、C、D。Dの下にE。中央下にAとF、Fの下にG。">
+   <div class="floor__room">
+    <span class="floor__cell" style="left:3.4%;top:4.8%;width:34.6%;height:19.6%"><a href="#ex-b">B</a></span>
+    <span class="floor__cell" style="left:43.4%;top:4.8%;width:30.3%;height:18.8%"><a href="#ex-c">C</a></span>
+    <span class="floor__cell" style="left:81.3%;top:4.8%;width:14.7%;height:24.4%"><a href="#ex-d">D</a></span>
+    <span class="floor__cell" style="left:81.3%;top:36%;width:14.7%;height:38%"><a href="#ex-e">E</a></span>
+    <span class="floor__cell" style="left:22.6%;top:46.4%;width:15.3%;height:40.4%"><a href="#ex-a">A</a></span>
+    <span class="floor__cell" style="left:41%;top:46%;width:16.8%;height:27.2%"><a href="#ex-f">F</a></span>
+    <span class="floor__cell" style="left:41%;top:74.4%;width:29.7%;height:20.8%"><a href="#ex-g">G</a></span>
     <span class="floor__label">FLOOR MAP ／ 展示案内</span>
+   </div>
+    <span class="floor__side"><span>廊下側</span></span>
   </div>
 
   <div class="grid">
     <article class="ex" id="ex-a">
       <p class="ex__n">A</p>
+      <h3 class="ex__t">みて覚えるロボットアーム<i lang="en">PHYSICAL AI / ROBOT ARM</i></h3>
+      <p class="ex__b">画面の中で考えるだけだったAIが、体を持って現実の物に触れる。人が動かして見せたお手本から動き方を学び、アームは自分で考えて動きます。</p>
+      <dl class="ex__s"><div><dt>形式</dt><dd>実演</dd></div><div><dt>種類</dt><dd>フィジカルAI</dd></div><div><dt>機体</dt><dd>SO-101</dd></div></dl>
+    </article>
+    <article class="ex" id="ex-b">
+      <p class="ex__n">B</p>
       <h3 class="ex__t">多摩川（2026年11月8日）<i lang="en">TAMAGAWA / NOV 8, 2026</i></h3>
       <p class="ex__b">11月8日の調布市周辺は、朝のうちは雲が広がりやすいものの、8時頃から日差しが届き、日中は秋晴れの心地よい陽気となるでしょう。</p>
       <dl class="ex__s"><div><dt>形式</dt><dd>映像</dd></div><div><dt>時間</dt><dd>15:16</dd></div></dl>
     </article>
-    <article class="ex" id="ex-b">
-      <p class="ex__n">B</p>
-      <h3 class="ex__t">コピー機としてのロボット<i lang="en">THE ROBOT AS A COPIER</i></h3>
-      <p class="ex__b">行き場を失ったロボットは似顔絵絵師としてのロボ生を歩み始めました。今日はフリー似顔絵の日みたいです。</p>
-      <dl class="ex__s"><div><dt>形式</dt><dd>実演</dd></div><div><dt>似顔絵</dt><dd>無料</dd></div></dl>
-    </article>
     <article class="ex" id="ex-c">
       <p class="ex__n">C</p>
+      <h3 class="ex__t">コピー機としてのロボット<i lang="en">THE ROBOT AS A COPIER</i></h3>
+      <p class="ex__b">行き場を失ったロボットは似顔絵絵師としてのロボ生を歩み始めました。今日はフリー似顔絵の日みたいです。</p>
+      <dl class="ex__s"><div><dt>形式</dt><dd>体験</dd></div><div><dt>似顔絵</dt><dd>無料</dd></div></dl>
+    </article>
+    <article class="ex" id="ex-d">
+      <p class="ex__n">D</p>
       <h3 class="ex__t">UOY<i lang="en">YOU, REVERSED</i></h3>
       <p class="ex__b">鏡のなかで、あなたと世界の境界をみつけ絵に閉じ込めましょう。</p>
       <dl class="ex__s"><div><dt>形式</dt><dd>体験</dd></div></dl>
     </article>
-    <article class="ex" id="ex-d">
-      <p class="ex__n">D</p>
+    <article class="ex" id="ex-e">
+      <p class="ex__n">E</p>
       <h3 class="ex__t">成長中<i lang="en">STILL GROWING</i></h3>
       <p class="ex__b">いつか人と同じように二足歩行ができるようになる。次は人と同じ見た目になる。どこが人とロボットの境界線となるのだろう？</p>
       <dl class="ex__s"><div><dt>形式</dt><dd>展示</dd></div><div><dt>機体</dt><dd>二足歩行</dd></div></dl>
     </article>
-    <article class="ex" id="ex-e">
-      <p class="ex__n">E</p>
+    <article class="ex" id="ex-f">
+      <p class="ex__n">F</p>
       <h3 class="ex__t">ばらばら<i lang="en">IN PIECES</i></h3>
       <p class="ex__b">大学の廃材置き場が動き出します。</p>
       <dl class="ex__s"><div><dt>形式</dt><dd>映像</dd></div><div><dt>時間</dt><dd>8:01</dd></div></dl>
     </article>
-    <article class="ex" id="ex-f">
-      <p class="ex__n">F</p>
-      <h3 class="ex__t">どこが境界線？<i lang="en">WHERE IS THE LINE?</i></h3>
-      <p class="ex__b">今日、あの境目が決まる。</p>
-      <dl class="ex__s"><div><dt>形式</dt><dd class="tbd">当日発表</dd></div></dl>
-    </article>
     <article class="ex" id="ex-g">
       <p class="ex__n">G</p>
-      <h3 class="ex__t">フィジカルAI<i lang="en">PHYSICAL AI</i></h3>
-      <p class="ex__b">画面の中で考えるだけだったAIが、体を持って現実の物に触れる。人が動かして見せたお手本から、ロボットアームが自分で動き方を学びます。</p>
-      <dl class="ex__s"><div><dt>形式</dt><dd>実演</dd></div><div><dt>機体</dt><dd>SO-101</dd></div><div><dt>詳細</dt><dd class="tbd">調整中</dd></div></dl>
+      <h3 class="ex__t">どこが境界線？<i lang="en">WHERE IS THE LINE?</i></h3>
+      <p class="ex__b">今日、あの境目が決まる。</p>
+      <dl class="ex__s"><div><dt>形式</dt><dd>体験</dd></div></dl>
     </article>
   </div>
 </section>
@@ -691,9 +693,9 @@
     <div class="refs__col">
       <h3 class="refs__h">日時 <i>DATES</i></h3>
       <ul class="refs__l">
-        <li><b>2026年11月20日（金）9:00–18:00</b><span>2026.11.20 FRI</span></li>
-        <li><b>2026年11月21日（土）9:00–18:00</b><span>2026.11.21 SAT</span></li>
-        <li><b>2026年11月22日（日）9:00–18:00</b><span>2026.11.22 SUN</span></li>
+        <li><b>2026年11月20日（金）10:00–18:00</b><span>2026.11.20 FRI</span></li>
+        <li><b>2026年11月21日（土）10:00–18:00</b><span>2026.11.21 SAT</span></li>
+        <li><b>2026年11月22日（日）10:00–18:00</b><span>2026.11.22 SUN</span></li>
       </ul>
     </div>
     <div class="refs__col">
